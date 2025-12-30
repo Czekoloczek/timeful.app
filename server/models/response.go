@@ -23,6 +23,7 @@ type Response struct {
 	// Availability
 	Availability []primitive.DateTime `json:"availability" bson:"availability"`
 	IfNeeded     []primitive.DateTime `json:"ifNeeded" bson:"ifNeeded"`
+	NotSure      []primitive.DateTime `json:"notSure" bson:"notSure"`
 
 	// Mapping from the start date of a day to the available times for that day
 	ManualAvailability *map[primitive.DateTime][]primitive.DateTime `json:"manualAvailability" bson:"manualAvailability,omitempty"`

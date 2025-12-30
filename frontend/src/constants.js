@@ -33,6 +33,7 @@ export const eventTypes = Object.freeze({
 export const availabilityTypes = Object.freeze({
   AVAILABLE: "available",
   IF_NEEDED: "if_needed",
+  NOT_SURE: "not_sure",
 })
 
 export const timeTypes = Object.freeze({

@@ -1099,6 +1099,7 @@ export default {
 
       availability: new Set(), // The current user's availability
       ifNeeded: new Set(), // The current user's "if needed" availability
+      notSure: new Set(), // The current user's "not sure" availability
       tempTimes: new Set(), // The specific times that the user has selected for the event (pending save)
       availabilityAnimTimeouts: [], // Timeouts for availability animation
       availabilityAnimEnabled: false, // Whether to animate timeslots changing colors
@@ -1239,6 +1240,10 @@ export default {
     /** Returns the if needed availability as an array */
     ifNeededArray() {
       return [...this.ifNeeded].map((item) => new Date(item))
+    },
+    /** Returns the not sure availability as an array */
+    notSureArray() {
+      return [...this.notSure].map((item) => new Date(item))
     },
     allowDrag() {
       return (
@@ -1793,6 +1798,11 @@ export default {
                 new Date(a).getTime()
               )
             ),
+            notSure: new Set(
+              this.fetchedResponses[userId]?.notSure?.map((a) =>
+                new Date(a).getTime()
+              )
+            ),
             user: user,
           }
         }
@@ -1814,6 +1824,11 @@ export default {
           ),
           ifNeeded: new Set(
             this.fetchedResponses[k]?.ifNeeded?.map((a) =>
+              new Date(a).getTime()
+            )
+          ),
+          notSure: new Set(
+            this.fetchedResponses[k]?.notSure?.map((a) =>
               new Date(a).getTime()
             )
           ),
@@ -2055,6 +2070,8 @@ export default {
             const daysOrTimes = this.event.daysOnly ? "days" : "times"
             if (this.availabilityType === availabilityTypes.IF_NEEDED) {
               return `Tap and drag to add your "if needed" ${daysOrTimes} in yellow.`
+            } else if (this.availabilityType === availabilityTypes.NOT_SURE) {
+              return `Tap and drag to add your "not sure" ${daysOrTimes} in blue.`
             }
             return `Tap and drag to add your "available" ${daysOrTimes} in green.`
           case this.states.SCHEDULE_EVENT:
@@ -2071,6 +2088,8 @@ export default {
           const daysOrTimes = this.event.daysOnly ? "days" : "times"
           if (this.availabilityType === availabilityTypes.IF_NEEDED) {
             return `Click and drag to add your "if needed" ${daysOrTimes} in yellow.`
+          } else if (this.availabilityType === availabilityTypes.NOT_SURE) {
+            return `Click and drag to add your "not sure" ${daysOrTimes} in blue.`
           }
           return `Click and drag to add your "available" ${daysOrTimes} in green.`
         case this.states.SCHEDULE_EVENT:
@@ -2191,7 +2210,8 @@ export default {
             dragAdd ||
             (!dragRemove &&
               (this.availability.has(date.getTime()) ||
-                this.ifNeeded.has(date.getTime())))
+                this.ifNeeded.has(date.getTime()) ||
+                this.notSure.has(date.getTime())))
           ) {
             // Determine whether to render as available or if needed block
             let type = availabilityTypes.AVAILABLE
@@ -2200,7 +2220,9 @@ export default {
             } else {
               type = this.availability.has(date.getTime())
                 ? availabilityTypes.AVAILABLE
-                : availabilityTypes.IF_NEEDED
+                : this.ifNeeded.has(date.getTime())
+                ? availabilityTypes.IF_NEEDED
+                : availabilityTypes.NOT_SURE
             }
 
             if (curBlockIndex in overlaidAvailability[d]) {
@@ -2518,7 +2540,9 @@ export default {
                 // Check availability array
                 if (
                   response.availability?.has(date.getTime()) ||
-                  (response.ifNeeded?.has(date.getTime()) && !hideIfNeeded)
+                  (!hideIfNeeded &&
+                    (response.ifNeeded?.has(date.getTime()) ||
+                      response.notSure?.has(date.getTime())))
                 ) {
                   formatted.get(date.getTime()).add(response.user._id)
                   continue
@@ -2599,6 +2623,7 @@ export default {
 
       this.availability = new Set()
       this.ifNeeded = new Set()
+      this.notSure = new Set()
       if (this.userHasResponded) {
         this.populateUserAvailability(this.authUser._id)
       }
@@ -2608,6 +2633,7 @@ export default {
       this.availability =
         new Set(this.parsedResponses[id]?.availability) ?? new Set()
       this.ifNeeded = new Set(this.parsedResponses[id]?.ifNeeded) ?? new Set()
+      this.notSure = new Set(this.parsedResponses[id]?.notSure) ?? new Set()
       this.$nextTick(() => (this.unsavedChanges = false))
     },
     /** Returns true if the calendar event is in the first split */
@@ -2841,6 +2867,7 @@ export default {
         type = "availability"
         payload.availability = this.availabilityArray
         payload.ifNeeded = this.ifNeededArray
+        payload.notSure = this.notSureArray
         if (this.authUser && !this.addingAvailabilityAsGuest) {
           payload.guest = false
         } else {
@@ -3102,6 +3129,10 @@ export default {
                 this.availabilityType === availabilityTypes.IF_NEEDED
               ) {
                 c += "tw-bg-yellow "
+              } else if (
+                this.availabilityType === availabilityTypes.NOT_SURE
+              ) {
+                s.backgroundColor = "#3b82f666"
               }
             }
           } else if (this.dragType === this.DRAG_TYPES.REMOVE) {
@@ -3123,6 +3154,8 @@ export default {
               s.backgroundColor = "#00994C77"
             } else if (this.ifNeeded.has(date.getTime())) {
               c += "tw-bg-yellow "
+            } else if (this.notSure.has(date.getTime())) {
+              s.backgroundColor = "#3b82f666"
             }
           }
         }
@@ -3134,6 +3167,10 @@ export default {
         if (timeslotRespondents.has(respondent)) {
           if (this.parsedResponses[respondent]?.ifNeeded?.has(date.getTime())) {
             c += "tw-bg-yellow "
+          } else if (
+            this.parsedResponses[respondent]?.notSure?.has(date.getTime())
+          ) {
+            s.backgroundColor = "#3b82f666"
           } else {
             s.backgroundColor = "#00994C77"
           }
@@ -3410,6 +3447,7 @@ export default {
       this.availabilityType = availabilityTypes.AVAILABLE
       this.availability = new Set()
       this.ifNeeded = new Set()
+      this.notSure = new Set()
 
       if (this.authUser && !this.addingAvailabilityAsGuest) {
         this.resetCurUserAvailability()
@@ -3686,11 +3724,19 @@ export default {
                 if (this.availabilityType === availabilityTypes.AVAILABLE) {
                   this.availability.add(date.getTime())
                   this.ifNeeded.delete(date.getTime())
+                  this.notSure.delete(date.getTime())
                 } else if (
                   this.availabilityType === availabilityTypes.IF_NEEDED
                 ) {
                   this.ifNeeded.add(date.getTime())
                   this.availability.delete(date.getTime())
+                  this.notSure.delete(date.getTime())
+                } else if (
+                  this.availabilityType === availabilityTypes.NOT_SURE
+                ) {
+                  this.notSure.add(date.getTime())
+                  this.availability.delete(date.getTime())
+                  this.ifNeeded.delete(date.getTime())
                 }
               }
             } else if (this.dragType === this.DRAG_TYPES.REMOVE) {
@@ -3700,6 +3746,7 @@ export default {
                 // Add / remove time from availability set
                 this.availability.delete(date.getTime())
                 this.ifNeeded.delete(date.getTime())
+                this.notSure.delete(date.getTime())
               }
             }
 
@@ -3894,7 +3941,9 @@ export default {
         (this.availabilityType === availabilityTypes.AVAILABLE &&
           this.availability.has(date.getTime())) ||
         (this.availabilityType === availabilityTypes.IF_NEEDED &&
-          this.ifNeeded.has(date.getTime()))
+          this.ifNeeded.has(date.getTime())) ||
+        (this.availabilityType === availabilityTypes.NOT_SURE &&
+          this.notSure.has(date.getTime()))
       ) {
         this.dragType = this.DRAG_TYPES.REMOVE
       } else {

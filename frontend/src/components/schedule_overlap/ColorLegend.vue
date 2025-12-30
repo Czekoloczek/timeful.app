@@ -15,6 +15,13 @@
     </div>
     <div class="tw-flex tw-items-center tw-gap-2">
       <div
+        class="tw-h-4 tw-w-4 tw-rounded tw-border tw-border-gray"
+        style="background-color: #3b82f666"
+      ></div>
+      <span class="tw-text-sm">Not sure</span>
+    </div>
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <div
         class="tw-h-4 tw-w-4 tw-rounded tw-border tw-border-gray tw-bg-[#E523232D]"
       ></div>
       <span class="tw-text-sm">Unavailable</span>

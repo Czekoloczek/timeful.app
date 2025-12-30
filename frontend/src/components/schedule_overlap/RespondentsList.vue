@@ -85,7 +85,7 @@
           class="tw-mt-2 tw-text-sm tw-font-normal tw-text-dark-gray"
           :class="showIfNeededStar ? 'tw-visible' : 'tw-invisible'"
         >
-          * if needed
+          * if needed / not sure
         </div>
       </template>
     </div>
@@ -170,7 +170,7 @@
                     user.firstName +
                     " " +
                     user.lastName +
-                    (respondentIfNeeded(user._id) ? "*" : "")
+                    (respondentUncertain(user._id) ? "*" : "")
                   }}
                 </div>
                 <div
@@ -546,7 +546,7 @@ export default {
       }
 
       for (const user of this.respondents) {
-        if (this.respondentIfNeeded(user._id)) {
+        if (this.respondentUncertain(user._id)) {
           return true
         }
       }
@@ -606,11 +606,13 @@ export default {
         c.push("tw-text-gray")
       }
 
+      const isNotSure = this.respondentNotSure(id)
+      const isIfNeeded = this.respondentIfNeeded(id)
       if (
         (this.curRespondentsSet.has(id) || this.curRespondents.length === 0) &&
-        this.respondentIfNeeded(id)
+        (isIfNeeded || isNotSure)
       ) {
-        c.push("tw-bg-yellow")
+        c.push(isNotSure ? "tw-bg-blue-100" : "tw-bg-yellow")
       }
 
       if (!this.curTimeslotAvailability[id]) {
@@ -619,12 +621,24 @@ export default {
       }
       return c
     },
+    respondentUncertain(id) {
+      if (!this.curDate || this.hideIfNeeded) return false
+
+      return this.respondentIfNeeded(id) || this.respondentNotSure(id)
+    },
     /** Returns whether the respondent has "ifNeeded" availability for the current timeslot */
     respondentIfNeeded(id) {
       if (!this.curDate || this.hideIfNeeded) return false
 
       return Boolean(
         this.parsedResponses[id]?.ifNeeded?.has(this.curDate.getTime())
+      )
+    },
+    respondentNotSure(id) {
+      if (!this.curDate || this.hideIfNeeded) return false
+
+      return Boolean(
+        this.parsedResponses[id]?.notSure?.has(this.curDate.getTime())
       )
     },
     /** Returns whether the current respondent is selected (for subset avail) */
@@ -708,6 +722,8 @@ export default {
                 row.push("Available")
               } else if (response.ifNeeded.has(curDate.getTime())) {
                 row.push("If needed")
+              } else if (response.notSure?.has(curDate.getTime())) {
+                row.push("Not sure")
               } else {
                 row.push("")
               }
@@ -738,7 +754,8 @@ export default {
               // If the user is available for the current timeslot, add the date to the row
               if (
                 response.availability.has(curDate.getTime()) ||
-                response.ifNeeded.has(curDate.getTime())
+                response.ifNeeded.has(curDate.getTime()) ||
+                response.notSure?.has(curDate.getTime())
               ) {
                 row.push(this.getDateString(curDate))
               } else {

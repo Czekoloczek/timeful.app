@@ -36,6 +36,13 @@ export default {
           borderStyle: { boxShadow: "0px 2px 8px 0px #FEDB9340" },
           value: availabilityTypes.IF_NEEDED,
         },
+        {
+          text: "Not sure",
+          activeClass: "tw-text-blue tw-bg-blue/5",
+          borderClass: "tw-border-blue",
+          borderStyle: { boxShadow: "0px 2px 8px 0px #3B82F640" },
+          value: availabilityTypes.NOT_SURE,
+        },
       ],
     }
   },
