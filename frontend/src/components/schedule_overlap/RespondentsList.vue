@@ -85,7 +85,7 @@
           class="tw-mt-2 tw-text-sm tw-font-normal tw-text-dark-gray"
           :class="showIfNeededStar ? 'tw-visible' : 'tw-invisible'"
         >
-          * if needed / not sure
+          {{ starText }}
         </div>
       </template>
     </div>
@@ -263,7 +263,7 @@
         class="tw-col-span-full tw-mb-2 tw-mt-1 tw-text-sm tw-text-dark-gray"
         :class="showIfNeededStar ? 'tw-visible' : 'tw-invisible'"
       >
-        * if needed / not sure
+        {{ starText }}
       </div>
       <div
         v-if="!maxHeight && pendingUsers.length > 0"
@@ -555,6 +555,18 @@ export default {
         }
       }
       return false
+    },
+    starText() {
+      const hasIfNeeded = this.respondents.some((u) =>
+        !this.hideIfNeeded && this.respondentIfNeeded(u._id)
+      )
+      const hasNotSure = this.respondents.some((u) =>
+        !this.hideNotSure && this.respondentNotSure(u._id)
+      )
+      if (hasIfNeeded && hasNotSure) return "* if needed or not sure"
+      if (hasIfNeeded) return "* if needed"
+      if (hasNotSure) return "* not sure"
+      return ""
     },
     isPhone() {
       return isPhone(this.$vuetify)

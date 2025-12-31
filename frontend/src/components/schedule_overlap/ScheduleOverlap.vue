@@ -2560,23 +2560,18 @@ export default {
                 if (response.availability?.has(date.getTime())) {
                   entry.available.add(response.user._id)
                   entry.union.add(response.user._id)
-                  continue
-                }
-                if (
+                } else if (
                   response.ifNeeded?.has(date.getTime()) &&
                   !hideIfNeeded
                 ) {
                   entry.ifNeeded.add(response.user._id)
                   entry.union.add(response.user._id)
-                  continue
-                }
-                if (
+                } else if (
                   response.notSure?.has(date.getTime()) &&
                   !hideNotSure
                 ) {
                   entry.notSure.add(response.user._id)
                   entry.union.add(response.user._id)
-                  continue
                 }
               }
             }
@@ -3228,10 +3223,23 @@ export default {
         const availableCount = timeslotEntry.available?.size ?? 0
         const ifNeededCount = timeslotEntry.ifNeeded?.size ?? 0
         const notSureCount = timeslotEntry.notSure?.size ?? 0
-        const totalVisible =
-          availableCount +
-          (this.hideIfNeeded ? 0 : ifNeededCount) +
-          (this.hideNotSure ? 0 : notSureCount)
+        const visibleIfNeeded = this.hideIfNeeded ? 0 : ifNeededCount
+        const visibleNotSure = this.hideNotSure ? 0 : notSureCount
+        const totalVisible = availableCount + visibleIfNeeded + visibleNotSure
+
+        const colors = {
+          available: "#00994C",
+          ifNeeded: "#FEDB93",
+          notSure: "#3b82f6",
+          red: "#E523230D",
+        }
+
+        const colorWithAlpha = (hex, alpha) => {
+          const a = Math.round(alpha * 255)
+            .toString(16)
+            .padStart(2, "0")
+          return `${hex}${a}`
+        }
 
         if (
           this.state === this.states.BEST_TIMES ||
@@ -3267,49 +3275,16 @@ export default {
 
         if (this.defaultState === this.states.BEST_TIMES) {
           if (max > 0 && numRespondents === max) {
-            const mixColor = (weights) => {
-              const total = weights.available + weights.ifNeeded + weights.notSure
-              if (!total) return null
-              const r =
-                (weights.available * 0 +
-                  weights.ifNeeded * 254 +
-                  weights.notSure * 59) /
-                total
-              const g =
-                (weights.available * 153 +
-                  weights.ifNeeded * 219 +
-                  weights.notSure * 130) /
-                total
-              const b =
-                (weights.available * 76 +
-                  weights.ifNeeded * 147 +
-                  weights.notSure * 246) /
-                total
-              return { r, g, b }
-            }
-            const color =
-              mixColor({
-                available: availableCount,
-                ifNeeded: this.hideIfNeeded ? 0 : ifNeededCount,
-                notSure: this.hideNotSure ? 0 : notSureCount,
-              }) ?? { r: 0, g: 153, b: 76 }
-            // Only set timeslot to green for the times that most people are available
+            const base =
+              availableCount > 0
+                ? colors.available
+                : visibleIfNeeded > 0
+                ? colors.ifNeeded
+                : colors.notSure
             if (totalRespondents === 1 || this.overlayAvailability) {
-              // Make single responses less saturated
-              const alpha = Math.round(0.53 * 255)
-                .toString(16)
-                .padStart(2, "0")
-              s.backgroundColor = `#${Math.round(color.r)
-                .toString(16)
-                .padStart(2, "0")}${Math.round(color.g)
-                .toString(16)
-                .padStart(2, "0")}${Math.round(color.b)
-                .toString(16)
-                .padStart(2, "0")}${alpha}`
+              s.backgroundColor = colorWithAlpha(base, 0.53)
             } else {
-              s.backgroundColor = `rgb(${Math.round(color.r)}, ${Math.round(
-                color.g
-              )}, ${Math.round(color.b)})`
+              s.backgroundColor = base
             }
           }
         } else if (this.defaultState === this.states.HEATMAP) {
@@ -3336,32 +3311,6 @@ export default {
             } else {
               // Determine color of timeslot based on number of people available
               const frac = numRespondents / max
-              const weights = {
-                available: availableCount,
-                ifNeeded: this.hideIfNeeded ? 0 : ifNeededCount,
-                notSure: this.hideNotSure ? 0 : notSureCount,
-              }
-              const total = weights.available + weights.ifNeeded + weights.notSure
-              const mixColor = () => {
-                if (!total) return { r: 0, g: 153, b: 76 }
-                const r =
-                  (weights.available * 0 +
-                    weights.ifNeeded * 254 +
-                    weights.notSure * 59) /
-                  total
-                const g =
-                  (weights.available * 153 +
-                    weights.ifNeeded * 219 +
-                    weights.notSure * 130) /
-                  total
-                const b =
-                  (weights.available * 76 +
-                    weights.ifNeeded * 147 +
-                    weights.notSure * 246) /
-                  total
-                return { r, g, b }
-              }
-              const color = mixColor()
               let alpha
               if (!this.overlayAvailability) {
                 alpha = Math.floor(frac * (255 - 30))
@@ -3386,13 +3335,13 @@ export default {
                   .padStart(2, "0")
               }
 
-              s.backgroundColor = `#${Math.round(color.r)
-                .toString(16)
-                .padStart(2, "0")}${Math.round(color.g)
-                .toString(16)
-                .padStart(2, "0")}${Math.round(color.b)
-                .toString(16)
-                .padStart(2, "0")}${alpha}`
+              const base =
+                availableCount > 0
+                  ? colors.available
+                  : visibleIfNeeded > 0
+                  ? colors.ifNeeded
+                  : colors.notSure
+              s.backgroundColor = `${base}${alpha}`
             }
           } else if (totalRespondents === 1) {
             const red = "#E523230D"
