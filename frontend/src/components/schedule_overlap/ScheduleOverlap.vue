@@ -85,6 +85,7 @@
                   :cur-timezone.sync="curTimezone"
                   :show-best-times.sync="showBestTimes"
                   :hide-if-needed.sync="hideIfNeeded"
+                  :hide-not-sure.sync="hideNotSure"
                   :is-weekly="isWeekly"
                   :calendar-permission-granted="calendarPermissionGranted"
                   :week-offset="weekOffset"
@@ -486,6 +487,7 @@
                   :cur-timezone.sync="curTimezone"
                   :show-best-times.sync="showBestTimes"
                   :hide-if-needed.sync="hideIfNeeded"
+                  :hide-not-sure.sync="hideNotSure"
                   :is-weekly="isWeekly"
                   :calendar-permission-granted="calendarPermissionGranted"
                   :week-offset="weekOffset"
@@ -813,6 +815,7 @@
                   :timezone="curTimezone"
                   :show-best-times.sync="showBestTimes"
                   :hide-if-needed.sync="hideIfNeeded"
+                  :hide-not-sure.sync="hideNotSure"
                   :start-calendar-on-monday.sync="startCalendarOnMonday"
                   :show-event-options="showEventOptions"
                   :guestAddedAvailability="guestAddedAvailability"
@@ -840,6 +843,7 @@
           :cur-timezone.sync="curTimezone"
           :show-best-times.sync="showBestTimes"
           :hide-if-needed.sync="hideIfNeeded"
+          :hide-not-sure.sync="hideNotSure"
           :start-calendar-on-monday.sync="startCalendarOnMonday"
           :is-weekly="isWeekly"
           :calendar-permission-granted="calendarPermissionGranted"
@@ -933,6 +937,7 @@
                   :timezone="curTimezone"
                   :show-best-times.sync="showBestTimes"
                   :hide-if-needed.sync="hideIfNeeded"
+                  :hide-not-sure.sync="hideNotSure"
                   :show-event-options="showEventOptions"
                   :guestAddedAvailability="guestAddedAvailability"
                   :addingAvailabilityAsGuest="addingAvailabilityAsGuest"
@@ -1140,6 +1145,7 @@ export default {
           ? false
           : localStorage["showBestTimes"] == "true",
       hideIfNeeded: false,
+      hideNotSure: false,
 
       /* Variables for drag stuff */
       DRAG_TYPES: {
@@ -1387,8 +1393,8 @@ export default {
       if (this.event.daysOnly) {
         for (const day of this.allDays) {
           const num = [
-            ...(this.responsesFormatted.get(day.dateObject.getTime()) ??
-              new Set()),
+            ...(this.responsesFormatted.get(day.dateObject.getTime())
+              ?.union ?? new Set()),
           ].filter((r) => this.curRespondentsSet.has(r)).length
 
           if (num > max) max = num
@@ -1840,8 +1846,9 @@ export default {
     max() {
       let max = 0
       for (const [dateTime, availability] of this.responsesFormatted) {
-        if (availability.size > max) {
-          max = availability.size
+        const size = availability?.union?.size ?? 0
+        if (size > max) {
+          max = size
         }
       }
 
@@ -2496,7 +2503,14 @@ export default {
 
       this.$worker
         .run(
-          (days, times, parsedResponses, daysOnly, hideIfNeeded) => {
+          (
+            days,
+            times,
+            parsedResponses,
+            daysOnly,
+            hideIfNeeded,
+            hideNotSure
+          ) => {
             // Define functions locally because we can't import functions
             const splitTimeNum = (timeNum) => {
               const hours = Math.floor(timeNum)
@@ -2533,18 +2547,35 @@ export default {
             // Create a map mapping time to the respondents available during that time
             const formatted = new Map()
             for (const date of dates) {
-              formatted.set(date.getTime(), new Set())
+              formatted.set(date.getTime(), {
+                available: new Set(),
+                ifNeeded: new Set(),
+                notSure: new Set(),
+                union: new Set(),
+              })
 
               // Check every response and see if they are available for the given time
               for (const response of Object.values(parsedResponses)) {
-                // Check availability array
+                const entry = formatted.get(date.getTime())
+                if (response.availability?.has(date.getTime())) {
+                  entry.available.add(response.user._id)
+                  entry.union.add(response.user._id)
+                  continue
+                }
                 if (
-                  response.availability?.has(date.getTime()) ||
-                  (!hideIfNeeded &&
-                    (response.ifNeeded?.has(date.getTime()) ||
-                      response.notSure?.has(date.getTime())))
+                  response.ifNeeded?.has(date.getTime()) &&
+                  !hideIfNeeded
                 ) {
-                  formatted.get(date.getTime()).add(response.user._id)
+                  entry.ifNeeded.add(response.user._id)
+                  entry.union.add(response.user._id)
+                  continue
+                }
+                if (
+                  response.notSure?.has(date.getTime()) &&
+                  !hideNotSure
+                ) {
+                  entry.notSure.add(response.user._id)
+                  entry.union.add(response.user._id)
                   continue
                 }
               }
@@ -2557,6 +2588,7 @@ export default {
             this.parsedResponses,
             this.event.daysOnly,
             this.hideIfNeeded,
+            this.hideNotSure,
           ]
         )
         .then((formatted) => {
@@ -2574,7 +2606,7 @@ export default {
     /** Returns a set of respondents for the given date/time */
     getRespondentsForHoursOffset(date, hoursOffset) {
       const d = getDateHoursOffset(date, hoursOffset)
-      return this.responsesFormatted.get(d.getTime()) ?? new Set()
+      return this.responsesFormatted.get(d.getTime())?.union ?? new Set()
     },
     showAvailability(row, col) {
       if (this.state === this.states.EDIT_AVAILABILITY && this.isPhone) {
@@ -2594,7 +2626,8 @@ export default {
       if (!date) return
 
       // Update current timeslot availability to show who is available for the given timeslot
-      const available = this.responsesFormatted.get(date.getTime()) ?? new Set()
+      const available =
+        this.responsesFormatted.get(date.getTime())?.union ?? new Set()
       for (const respondent of this.respondents) {
         if (available.has(respondent._id)) {
           this.curTimeslotAvailability[respondent._id] = true
@@ -2631,9 +2664,9 @@ export default {
     /** Populates the availability set for the auth user from the responses object stored on the server */
     populateUserAvailability(id) {
       this.availability =
-        new Set(this.parsedResponses[id]?.availability) ?? new Set()
-      this.ifNeeded = new Set(this.parsedResponses[id]?.ifNeeded) ?? new Set()
-      this.notSure = new Set(this.parsedResponses[id]?.notSure) ?? new Set()
+        new Set(this.parsedResponses[id]?.availability ?? [])
+      this.ifNeeded = new Set(this.parsedResponses[id]?.ifNeeded ?? [])
+      this.notSure = new Set(this.parsedResponses[id]?.notSure ?? [])
       this.$nextTick(() => (this.unsavedChanges = false))
     },
     /** Returns true if the calendar event is in the first split */
@@ -3097,8 +3130,10 @@ export default {
       const s = {}
       if (!date) return { class: c, style: s }
 
-      const timeslotRespondents =
-        this.responsesFormatted.get(date.getTime()) ?? new Set()
+      const timeslotEntry =
+        this.responsesFormatted.get(date.getTime()) ??
+        { available: new Set(), ifNeeded: new Set(), notSure: new Set(), union: new Set() }
+      const timeslotRespondents = timeslotEntry.union ?? new Set()
 
       // Fill style
 
@@ -3190,17 +3225,25 @@ export default {
         let numRespondents
         let max
 
+        const availableCount = timeslotEntry.available?.size ?? 0
+        const ifNeededCount = timeslotEntry.ifNeeded?.size ?? 0
+        const notSureCount = timeslotEntry.notSure?.size ?? 0
+        const totalVisible =
+          availableCount +
+          (this.hideIfNeeded ? 0 : ifNeededCount) +
+          (this.hideNotSure ? 0 : notSureCount)
+
         if (
           this.state === this.states.BEST_TIMES ||
           this.state === this.states.HEATMAP ||
           this.state === this.states.SCHEDULE_EVENT
         ) {
-          numRespondents = timeslotRespondents.size
+          numRespondents = totalVisible
           max = this.max
         } else if (this.state === this.states.SUBSET_AVAILABILITY) {
-          numRespondents = [...timeslotRespondents].filter((r) =>
-            this.curRespondentsSet.has(r)
-          ).length
+          numRespondents = [...timeslotRespondents]
+            .filter((r) => this.curRespondentsSet.has(r))
+            .length
 
           max = this.curRespondentsMax
         } else if (this.overlayAvailability) {
@@ -3212,7 +3255,7 @@ export default {
             numRespondents = timeslotRespondents.size - 1
             max = this.max
           } else {
-            numRespondents = timeslotRespondents.size
+            numRespondents = totalVisible
             max = this.max
           }
         }
@@ -3224,14 +3267,49 @@ export default {
 
         if (this.defaultState === this.states.BEST_TIMES) {
           if (max > 0 && numRespondents === max) {
+            const mixColor = (weights) => {
+              const total = weights.available + weights.ifNeeded + weights.notSure
+              if (!total) return null
+              const r =
+                (weights.available * 0 +
+                  weights.ifNeeded * 254 +
+                  weights.notSure * 59) /
+                total
+              const g =
+                (weights.available * 153 +
+                  weights.ifNeeded * 219 +
+                  weights.notSure * 130) /
+                total
+              const b =
+                (weights.available * 76 +
+                  weights.ifNeeded * 147 +
+                  weights.notSure * 246) /
+                total
+              return { r, g, b }
+            }
+            const color =
+              mixColor({
+                available: availableCount,
+                ifNeeded: this.hideIfNeeded ? 0 : ifNeededCount,
+                notSure: this.hideNotSure ? 0 : notSureCount,
+              }) ?? { r: 0, g: 153, b: 76 }
             // Only set timeslot to green for the times that most people are available
             if (totalRespondents === 1 || this.overlayAvailability) {
               // Make single responses less saturated
-              const green = "#00994C88"
-              s.backgroundColor = green
+              const alpha = Math.round(0.53 * 255)
+                .toString(16)
+                .padStart(2, "0")
+              s.backgroundColor = `#${Math.round(color.r)
+                .toString(16)
+                .padStart(2, "0")}${Math.round(color.g)
+                .toString(16)
+                .padStart(2, "0")}${Math.round(color.b)
+                .toString(16)
+                .padStart(2, "0")}${alpha}`
             } else {
-              const green = "#00994C"
-              s.backgroundColor = green
+              s.backgroundColor = `rgb(${Math.round(color.r)}, ${Math.round(
+                color.g
+              )}, ${Math.round(color.b)})`
             }
           }
         } else if (this.defaultState === this.states.HEATMAP) {
@@ -3247,6 +3325,10 @@ export default {
                 )
               ) {
                 c += "tw-bg-yellow "
+              } else if (
+                this.parsedResponses[respondentId]?.notSure?.has(date.getTime())
+              ) {
+                s.backgroundColor = "#3b82f666"
               } else {
                 const green = "#00994C88"
                 s.backgroundColor = green
@@ -3254,7 +3336,32 @@ export default {
             } else {
               // Determine color of timeslot based on number of people available
               const frac = numRespondents / max
-              const green = "#00994C"
+              const weights = {
+                available: availableCount,
+                ifNeeded: this.hideIfNeeded ? 0 : ifNeededCount,
+                notSure: this.hideNotSure ? 0 : notSureCount,
+              }
+              const total = weights.available + weights.ifNeeded + weights.notSure
+              const mixColor = () => {
+                if (!total) return { r: 0, g: 153, b: 76 }
+                const r =
+                  (weights.available * 0 +
+                    weights.ifNeeded * 254 +
+                    weights.notSure * 59) /
+                  total
+                const g =
+                  (weights.available * 153 +
+                    weights.ifNeeded * 219 +
+                    weights.notSure * 130) /
+                  total
+                const b =
+                  (weights.available * 76 +
+                    weights.ifNeeded * 147 +
+                    weights.notSure * 246) /
+                  total
+                return { r, g, b }
+              }
+              const color = mixColor()
               let alpha
               if (!this.overlayAvailability) {
                 alpha = Math.floor(frac * (255 - 30))
@@ -3279,7 +3386,13 @@ export default {
                   .padStart(2, "0")
               }
 
-              s.backgroundColor = green + alpha
+              s.backgroundColor = `#${Math.round(color.r)
+                .toString(16)
+                .padStart(2, "0")}${Math.round(color.g)
+                .toString(16)
+                .padStart(2, "0")}${Math.round(color.b)
+                .toString(16)
+                .padStart(2, "0")}${alpha}`
             }
           } else if (totalRespondents === 1) {
             const red = "#E523230D"
@@ -4466,6 +4579,9 @@ export default {
       }
     },
     hideIfNeeded() {
+      this.getResponsesFormatted()
+    },
+    hideNotSure() {
       this.getResponsesFormatted()
     },
     parsedResponses() {

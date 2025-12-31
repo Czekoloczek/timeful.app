@@ -3,6 +3,7 @@
     :value="value"
     @input="(e) => $emit('input', e)"
     :options="options"
+    containerClass="tw-min-w-[320px]"
   />
 </template>
 

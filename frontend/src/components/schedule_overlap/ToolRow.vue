@@ -57,6 +57,8 @@
             @update:showBestTimes="(val) => $emit('update:showBestTimes', val)"
             :hideIfNeeded="hideIfNeeded"
             @update:hideIfNeeded="(val) => $emit('update:hideIfNeeded', val)"
+            :hideNotSure="hideNotSure"
+            @update:hideNotSure="(val) => $emit('update:hideNotSure', val)"
             :showEventOptions="showEventOptions"
             @toggleShowEventOptions="$emit('toggleShowEventOptions')"
             :startCalendarOnMonday="startCalendarOnMonday"
@@ -184,6 +186,7 @@ export default {
     startCalendarOnMonday: { type: Boolean, default: false },
     showBestTimes: { type: Boolean, required: true },
     hideIfNeeded: { type: Boolean, required: true },
+    hideNotSure: { type: Boolean, required: true },
     isWeekly: { type: Boolean, required: true },
     calendarPermissionGranted: { type: Boolean, required: true },
     weekOffset: { type: Number, required: true },

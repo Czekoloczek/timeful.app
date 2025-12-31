@@ -263,7 +263,7 @@
         class="tw-col-span-full tw-mb-2 tw-mt-1 tw-text-sm tw-text-dark-gray"
         :class="showIfNeededStar ? 'tw-visible' : 'tw-invisible'"
       >
-        * if needed
+        * if needed / not sure
       </div>
       <div
         v-if="!maxHeight && pendingUsers.length > 0"
@@ -457,6 +457,7 @@ export default {
     timezone: { type: Object, required: true },
     showBestTimes: { type: Boolean, required: true },
     hideIfNeeded: { type: Boolean, required: true },
+    hideNotSure: { type: Boolean, required: true },
     startCalendarOnMonday: { type: Boolean, default: false },
     showEventOptions: { type: Boolean, required: true },
     guestAddedAvailability: { type: Boolean, required: true },
@@ -541,12 +542,15 @@ export default {
       })
     },
     showIfNeededStar() {
-      if (this.hideIfNeeded) {
+      if (this.hideIfNeeded && this.hideNotSure) {
         return false
       }
 
       for (const user of this.respondents) {
-        if (this.respondentUncertain(user._id)) {
+        if (
+          (!this.hideIfNeeded && this.respondentIfNeeded(user._id)) ||
+          (!this.hideNotSure && this.respondentNotSure(user._id))
+        ) {
           return true
         }
       }
@@ -606,8 +610,8 @@ export default {
         c.push("tw-text-gray")
       }
 
-      const isNotSure = this.respondentNotSure(id)
-      const isIfNeeded = this.respondentIfNeeded(id)
+      const isNotSure = !this.hideNotSure && this.respondentNotSure(id)
+      const isIfNeeded = !this.hideIfNeeded && this.respondentIfNeeded(id)
       if (
         (this.curRespondentsSet.has(id) || this.curRespondents.length === 0) &&
         (isIfNeeded || isNotSure)
@@ -622,9 +626,12 @@ export default {
       return c
     },
     respondentUncertain(id) {
-      if (!this.curDate || this.hideIfNeeded) return false
+      if (!this.curDate) return false
 
-      return this.respondentIfNeeded(id) || this.respondentNotSure(id)
+      return (
+        (!this.hideIfNeeded && this.respondentIfNeeded(id)) ||
+        (!this.hideNotSure && this.respondentNotSure(id))
+      )
     },
     /** Returns whether the respondent has "ifNeeded" availability for the current timeslot */
     respondentIfNeeded(id) {
@@ -635,7 +642,7 @@ export default {
       )
     },
     respondentNotSure(id) {
-      if (!this.curDate || this.hideIfNeeded) return false
+      if (!this.curDate || this.hideNotSure) return false
 
       return Boolean(
         this.parsedResponses[id]?.notSure?.has(this.curDate.getTime())
