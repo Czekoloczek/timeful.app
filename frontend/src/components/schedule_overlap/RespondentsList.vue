@@ -331,6 +331,8 @@
           @update:showBestTimes="(val) => $emit('update:showBestTimes', val)"
           :hideIfNeeded="hideIfNeeded"
           @update:hideIfNeeded="(val) => $emit('update:hideIfNeeded', val)"
+          :hideNotSure="hideNotSure"
+          @update:hideNotSure="(val) => $emit('update:hideNotSure', val)"
           :showCalendarEvents="showCalendarEvents"
           @update:showCalendarEvents="
             (val) => $emit('update:showCalendarEvents', val)
@@ -625,9 +627,9 @@ export default {
       const isNotSure = !this.hideNotSure && this.respondentNotSure(id)
       const isIfNeeded = !this.hideIfNeeded && this.respondentIfNeeded(id)
       if (this.curRespondentsSet.has(id) && (isIfNeeded || isNotSure)) {
-        c.push(isNotSure ? "tw-bg-blue-200 tw-text-blue" : "tw-bg-yellow")
+        c.push(isNotSure ? "tw-bg-blue-200" : "tw-bg-yellow")
       } else if (this.curRespondents.length === 0 && isNotSure) {
-        c.push("tw-bg-blue-100 tw-text-blue")
+        c.push("tw-bg-blue-100")
       } else if (this.curRespondents.length === 0 && isIfNeeded) {
         c.push("tw-bg-yellow")
       }
