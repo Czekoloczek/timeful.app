@@ -599,6 +599,7 @@ func updateEventResponse(c *gin.Context) {
 	payload := struct {
 		Availability []primitive.DateTime `json:"availability"`
 		IfNeeded     []primitive.DateTime `json:"ifNeeded"`
+		NotSure      []primitive.DateTime `json:"notSure"`
 
 		// Guest information
 		Guest *bool  `json:"guest" binding:"required"`
@@ -639,6 +640,7 @@ func updateEventResponse(c *gin.Context) {
 				Email:        payload.Email,
 				Availability: payload.Availability,
 				IfNeeded:     payload.IfNeeded,
+				NotSure:      payload.NotSure,
 			}
 		} else {
 			userIdInterface := session.Get("userId")
@@ -654,6 +656,7 @@ func updateEventResponse(c *gin.Context) {
 				UserId:                  userId,
 				Availability:            payload.Availability,
 				IfNeeded:                payload.IfNeeded,
+				NotSure:                 payload.NotSure,
 				UseCalendarAvailability: payload.UseCalendarAvailability,
 				EnabledCalendars:        payload.EnabledCalendars,
 				CalendarOptions:         payload.CalendarOptions,

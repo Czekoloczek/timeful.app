@@ -85,7 +85,7 @@
           class="tw-mt-2 tw-text-sm tw-font-normal tw-text-dark-gray"
           :class="showIfNeededStar ? 'tw-visible' : 'tw-invisible'"
         >
-          * if needed
+          {{ starText }}
         </div>
       </template>
     </div>
@@ -170,7 +170,7 @@
                     user.firstName +
                     " " +
                     user.lastName +
-                    (respondentIfNeeded(user._id) ? "*" : "")
+                    (respondentUncertain(user._id) ? "*" : "")
                   }}
                 </div>
                 <div
@@ -263,7 +263,7 @@
         class="tw-col-span-full tw-mb-2 tw-mt-1 tw-text-sm tw-text-dark-gray"
         :class="showIfNeededStar ? 'tw-visible' : 'tw-invisible'"
       >
-        * if needed
+        {{ starText }}
       </div>
       <div
         v-if="!maxHeight && pendingUsers.length > 0"
@@ -331,6 +331,8 @@
           @update:showBestTimes="(val) => $emit('update:showBestTimes', val)"
           :hideIfNeeded="hideIfNeeded"
           @update:hideIfNeeded="(val) => $emit('update:hideIfNeeded', val)"
+          :hideNotSure="hideNotSure"
+          @update:hideNotSure="(val) => $emit('update:hideNotSure', val)"
           :showCalendarEvents="showCalendarEvents"
           @update:showCalendarEvents="
             (val) => $emit('update:showCalendarEvents', val)
@@ -457,6 +459,7 @@ export default {
     timezone: { type: Object, required: true },
     showBestTimes: { type: Boolean, required: true },
     hideIfNeeded: { type: Boolean, required: true },
+    hideNotSure: { type: Boolean, required: true },
     startCalendarOnMonday: { type: Boolean, default: false },
     showEventOptions: { type: Boolean, required: true },
     guestAddedAvailability: { type: Boolean, required: true },
@@ -541,16 +544,31 @@ export default {
       })
     },
     showIfNeededStar() {
-      if (this.hideIfNeeded) {
+      if (this.hideIfNeeded && this.hideNotSure) {
         return false
       }
 
       for (const user of this.respondents) {
-        if (this.respondentIfNeeded(user._id)) {
+        if (
+          (!this.hideIfNeeded && this.respondentIfNeeded(user._id)) ||
+          (!this.hideNotSure && this.respondentNotSure(user._id))
+        ) {
           return true
         }
       }
       return false
+    },
+    starText() {
+      const hasIfNeeded = this.respondents.some((u) =>
+        !this.hideIfNeeded && this.respondentIfNeeded(u._id)
+      )
+      const hasNotSure = this.respondents.some((u) =>
+        !this.hideNotSure && this.respondentNotSure(u._id)
+      )
+      if (hasIfNeeded && hasNotSure) return "* if needed or not sure"
+      if (hasIfNeeded) return "* if needed"
+      if (hasNotSure) return "* not sure"
+      return ""
     },
     isPhone() {
       return isPhone(this.$vuetify)
@@ -606,10 +624,13 @@ export default {
         c.push("tw-text-gray")
       }
 
-      if (
-        (this.curRespondentsSet.has(id) || this.curRespondents.length === 0) &&
-        this.respondentIfNeeded(id)
-      ) {
+      const isNotSure = !this.hideNotSure && this.respondentNotSure(id)
+      const isIfNeeded = !this.hideIfNeeded && this.respondentIfNeeded(id)
+      if (this.curRespondentsSet.has(id) && (isIfNeeded || isNotSure)) {
+        c.push(isNotSure ? "tw-bg-blue-200" : "tw-bg-yellow")
+      } else if (this.curRespondents.length === 0 && isNotSure) {
+        c.push("tw-bg-blue-100")
+      } else if (this.curRespondents.length === 0 && isIfNeeded) {
         c.push("tw-bg-yellow")
       }
 
@@ -619,12 +640,27 @@ export default {
       }
       return c
     },
+    respondentUncertain(id) {
+      if (!this.curDate) return false
+
+      return (
+        (!this.hideIfNeeded && this.respondentIfNeeded(id)) ||
+        (!this.hideNotSure && this.respondentNotSure(id))
+      )
+    },
     /** Returns whether the respondent has "ifNeeded" availability for the current timeslot */
     respondentIfNeeded(id) {
       if (!this.curDate || this.hideIfNeeded) return false
 
       return Boolean(
         this.parsedResponses[id]?.ifNeeded?.has(this.curDate.getTime())
+      )
+    },
+    respondentNotSure(id) {
+      if (!this.curDate || this.hideNotSure) return false
+
+      return Boolean(
+        this.parsedResponses[id]?.notSure?.has(this.curDate.getTime())
       )
     },
     /** Returns whether the current respondent is selected (for subset avail) */
@@ -708,6 +744,8 @@ export default {
                 row.push("Available")
               } else if (response.ifNeeded.has(curDate.getTime())) {
                 row.push("If needed")
+              } else if (response.notSure?.has(curDate.getTime())) {
+                row.push("Not sure")
               } else {
                 row.push("")
               }
@@ -738,7 +776,8 @@ export default {
               // If the user is available for the current timeslot, add the date to the row
               if (
                 response.availability.has(curDate.getTime()) ||
-                response.ifNeeded.has(curDate.getTime())
+                response.ifNeeded.has(curDate.getTime()) ||
+                response.notSure?.has(curDate.getTime())
               ) {
                 row.push(this.getDateString(curDate))
               } else {

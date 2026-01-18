@@ -1,6 +1,7 @@
 <template>
   <div
     class="tw-relative tw-flex tw-w-fit tw-items-center tw-rounded-md tw-border tw-border-light-gray-stroke"
+    :class="containerClass"
   >
     <div
       class="tw-absolute tw-h-full tw-rounded-md tw-border tw-transition-all"
@@ -31,6 +32,7 @@ export default {
 
   props: {
     value: { required: true },
+    containerClass: { type: String, default: "" },
 
     // Array of objects of the following structure:
     // {

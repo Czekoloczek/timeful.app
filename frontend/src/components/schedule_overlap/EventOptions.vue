@@ -35,6 +35,20 @@
         </template>
       </v-switch>
       <v-switch
+        v-if="numResponses >= 1 && !isGroup"
+        inset
+        id="hide-not-sure-toggle"
+        :input-value="hideNotSure"
+        @change="(val) => $emit('update:hideNotSure', !!val)"
+        hide-details
+      >
+        <template v-slot:label>
+          <div class="tw-text-sm tw-text-black">
+            Hide not sure {{ event.daysOnly ? "days" : "times" }}
+          </div>
+        </template>
+      </v-switch>
+      <v-switch
         v-if="showCalendarEvents !== undefined && isGroup && !isPhone"
         inset
         :input-value="showCalendarEvents"
@@ -79,6 +93,7 @@ export default {
     event: { type: Object, required: true },
     showBestTimes: { type: Boolean, required: true },
     hideIfNeeded: { type: Boolean, required: true },
+    hideNotSure: { type: Boolean, required: true },
     numResponses: { type: Number, required: true },
     showEventOptions: { type: Boolean, required: true },
     showCalendarEvents: { type: Boolean, default: false },
