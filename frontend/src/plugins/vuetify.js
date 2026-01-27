@@ -6,8 +6,13 @@ Vue.use(Vuetify)
 
 export default new Vuetify({
   theme: {
+    dark: false,
     themes: {
       light: {
+        primary: tailwind.theme.colors.green,
+        error: tailwind.theme.colors.red,
+      },
+      dark: {
         primary: tailwind.theme.colors.green,
         error: tailwind.theme.colors.red,
       },

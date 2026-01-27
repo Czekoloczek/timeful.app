@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :dark="$vuetify.theme.dark" :class="{ 'theme--dark': $vuetify.theme.dark }">
     <DiscordBanner />
     <AutoSnackbar color="error" :text="error" />
     <AutoSnackbar color="tw-bg-blue" :text="info" />
@@ -101,6 +101,44 @@
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans&display=swap");
+
+html.theme--dark,
+.theme--dark body {
+  background-color: #0f1115;
+  color: #ffffff;
+}
+
+.theme--dark .tw-text-very-dark-gray {
+  color: #d1d5db;
+}
+
+.theme--dark .tw-text-dark-gray {
+  color: #d1d5db;
+}
+
+.theme--dark .tw-text-gray {
+  color: #9ca3af;
+}
+
+.theme--dark .tw-bg-white {
+  background-color: #1b1e24;
+}
+
+.theme--dark .tw-bg-light-gray {
+  background-color: #1a1d22;
+}
+
+.theme--dark .tw-bg-off-white {
+  background-color: #14181d;
+}
+
+.theme--dark .tw-border-light-gray-stroke {
+  border-color: #2d3139;
+}
+
+.theme--dark .tw-border-gray {
+  border-color: #3a3f47;
+}
 
 html {
   overflow-y: auto !important;

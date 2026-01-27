@@ -58,14 +58,17 @@
         ></div>
       </div>
 
-      <div class="tw-flex tw-flex-col tw-items-center tw-justify-between">
-        <router-link
-          class="tw-text-xs tw-font-medium tw-text-gray"
-          :to="{ name: 'privacy-policy' }"
-        >
-          Privacy Policy
-        </router-link>
-      </div>
+       <div class="tw-flex tw-flex-col tw-items-center tw-justify-between">
+         <router-link
+           class="tw-text-xs tw-font-medium tw-text-gray"
+           :to="{ name: 'privacy-policy' }"
+         >
+           Privacy Policy
+         </router-link>
+         <div class="tw-mt-1 tw-text-xs tw-text-gray">
+           Version {{ version }}
+         </div>
+       </div>
 
       <!-- FAB -->
       <BottomFab
@@ -92,6 +95,7 @@ import { mapState, mapActions, mapMutations } from "vuex"
 import { eventTypes } from "@/constants"
 import { isPhone, get } from "@/utils"
 import FormerlyKnownAs from "@/components/FormerlyKnownAs.vue"
+import pkg from "../../package.json"
 
 export default {
   name: "Home",
@@ -136,6 +140,9 @@ export default {
     ...mapState(["events", "authUser", "groupsEnabled"]),
     eventsNotEmpty() {
       return this.events.length > 0
+    },
+    version() {
+      return pkg.version
     },
     isPhone() {
       return isPhone(this.$vuetify)

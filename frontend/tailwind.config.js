@@ -48,6 +48,7 @@ module.exports = {
     },
   },
   plugins: [],
+  darkMode: "media",
   prefix: "tw-",
   safelist: [],
 }

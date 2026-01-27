@@ -627,9 +627,9 @@ export default {
       const isNotSure = !this.hideNotSure && this.respondentNotSure(id)
       const isIfNeeded = !this.hideIfNeeded && this.respondentIfNeeded(id)
       if (this.curRespondentsSet.has(id) && (isIfNeeded || isNotSure)) {
-        c.push(isNotSure ? "tw-bg-blue/10" : "tw-bg-yellow")
+        c.push(isNotSure ? "tw-bg-blue/30" : "tw-bg-yellow")
       } else if (this.curRespondents.length === 0 && isNotSure) {
-        c.push("tw-bg-blue/5")
+        c.push("tw-bg-blue/15")
       } else if (this.curRespondents.length === 0 && isIfNeeded) {
         c.push("tw-bg-yellow")
       }

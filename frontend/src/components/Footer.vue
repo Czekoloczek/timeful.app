@@ -77,6 +77,7 @@
             <router-link :to="{ name: 'cookie-settings' }" class="tw-text-sm">
               Cookie Preferences
             </router-link>
+            <div class="tw-text-xs tw-text-white/70">Version {{ version }}</div>
           </div>
         </div>
         <!-- Links -->
@@ -181,6 +182,7 @@ a:hover {
 
 <script>
 import { mapActions } from "vuex"
+import pkg from "../../package.json"
 
 export default {
   name: "Footer",
@@ -196,6 +198,9 @@ export default {
         "..." +
         this.contractAddress.slice(-4)
       )
+    },
+    version() {
+      return pkg.version
     },
   },
   methods: {
