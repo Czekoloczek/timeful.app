@@ -44,7 +44,6 @@ const syncVuetifyTheme = () => {
     app.$vuetify.theme.dark = isDark
     document.documentElement.classList.toggle("theme--dark", isDark)
   }
-  updateTheme(mediaQuery)
   if (mediaQuery.addEventListener) {
     mediaQuery.addEventListener("change", updateTheme)
   } else if (mediaQuery.addListener) {
@@ -52,5 +51,8 @@ const syncVuetifyTheme = () => {
   }
 }
 
+const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+app.$vuetify.theme.dark = isDark
+document.documentElement.classList.toggle("theme--dark", isDark)
 syncVuetifyTheme()
 app.$mount("#app")

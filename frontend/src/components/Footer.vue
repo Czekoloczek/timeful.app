@@ -199,7 +199,7 @@ export default {
       )
     },
     version() {
-      return process.env.VUE_APP_VERSION
+      return process.env.VUE_APP_VERSION || "0.0.0"
     },
   },
   methods: {

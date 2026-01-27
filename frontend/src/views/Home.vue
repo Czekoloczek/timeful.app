@@ -141,7 +141,7 @@ export default {
       return this.events.length > 0
     },
     version() {
-      return process.env.VUE_APP_VERSION
+      return process.env.VUE_APP_VERSION || "0.0.0"
     },
     isPhone() {
       return isPhone(this.$vuetify)
