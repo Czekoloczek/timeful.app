@@ -182,7 +182,6 @@ a:hover {
 
 <script>
 import { mapActions } from "vuex"
-import pkg from "../../package.json"
 
 export default {
   name: "Footer",
@@ -200,7 +199,7 @@ export default {
       )
     },
     version() {
-      return pkg.version
+      return process.env.VUE_APP_VERSION
     },
   },
   methods: {

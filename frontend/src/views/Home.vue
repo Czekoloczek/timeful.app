@@ -95,7 +95,6 @@ import { mapState, mapActions, mapMutations } from "vuex"
 import { eventTypes } from "@/constants"
 import { isPhone, get } from "@/utils"
 import FormerlyKnownAs from "@/components/FormerlyKnownAs.vue"
-import pkg from "../../package.json"
 
 export default {
   name: "Home",
@@ -142,7 +141,7 @@ export default {
       return this.events.length > 0
     },
     version() {
-      return pkg.version
+      return process.env.VUE_APP_VERSION
     },
     isPhone() {
       return isPhone(this.$vuetify)
