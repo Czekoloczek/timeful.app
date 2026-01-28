@@ -6,7 +6,6 @@
     :src="src"
     transition="fade-transition"
     :width="width"
-    :style="styleOverrides"
   />
 </template>
 
@@ -53,12 +52,6 @@ export default {
         case "aprilfools":
           return this.isPhone ? 200 : 300
       }
-    },
-    styleOverrides() {
-      if (this.type === "timeful" && this.$vuetify.theme.dark) {
-        return { filter: "invert(1)" }
-      }
-      return {}
     },
   },
 }

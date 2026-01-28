@@ -101,7 +101,7 @@
               <div
                 class="sm:mb-2 tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2"
               >
-            <div class="tw-text-xl sm:tw-text-3xl dark:tw-text-white">{{ event.name }}</div>
+            <div class="tw-text-xl sm:tw-text-3xl tw-text-black dark:tw-text-white">{{ event.name }}</div>
                 <v-chip
                   v-if="event.when2meetHref?.length > 0"
                   :href="`https://when2meet.com${event.when2meetHref}`"

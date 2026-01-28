@@ -153,7 +153,7 @@
                   @click="(e) => $emit('clickRespondent', e, user._id)"
                   color="primary"
                   :value="respondentSelected(user._id)"
-                class="tw-absolute -tw-top-[2px] tw-left-0 tw-bg-white dark:tw-bg-[#1b1e24] tw-opacity-0 group-hover:tw-opacity-100 group-[&:has(.email-hover-target:hover)]:!tw-opacity-0"
+                class="tw-absolute -tw-top-[2px] tw-left-0 tw-bg-white dark:tw-bg-[#1b1e24] tw-opacity-0 group-hover:tw-opacity-100 group-[&:has(.email-hover-target:hover)]:!tw-opacity-0 dark:group-hover:tw-opacity-100"
                   :class="
                     respondentSelected(user._id)
                       ? 'tw-opacity-100'
