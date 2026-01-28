@@ -246,7 +246,7 @@ export default {
     // Profile settings
     firstName: "",
     lastName: "",
-    themePreference: "system",
+    themePreference: localStorage.getItem("themePreference") || "system",
     themeOptions: [
       { text: "System", value: "system" },
       { text: "Light", value: "light" },

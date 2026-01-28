@@ -483,9 +483,7 @@ export default {
       return this.scheduleOverlapComponent?.allowScheduleEvent
     },
     version() {
-      const version = process.env.VUE_APP_VERSION || "0.0.0"
-      const commit = process.env.VUE_APP_COMMIT
-      return commit ? `${version} (${commit})` : version
+      return process.env.VUE_APP_COMMIT || "unknown"
     },
     calendarTypes() {
       return calendarTypes

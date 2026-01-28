@@ -40,6 +40,14 @@
             Settings
           </v-list-item-title>
         </v-list-item>
+        <v-list-item id="theme-btn" @click="toggleTheme">
+          <v-list-item-title class="tw-flex tw-items-center tw-gap-1">
+            <v-icon class="tw-mr-1" small color="black"
+              >mdi-theme-light-dark</v-icon
+            >
+            Theme: {{ themeLabel }}
+          </v-list-item-title>
+        </v-list-item>
         <v-divider></v-divider>
         <v-list-item id="sign-out-btn" @click="signOut">
           <v-list-item-title class="red--text tw-flex tw-items-center tw-gap-1">
@@ -56,7 +64,7 @@
 <script>
 import UserAvatarContent from "@/components/UserAvatarContent"
 import { mapState, mapMutations } from "vuex"
-import { post, isPhone } from "@/utils"
+import { post, isPhone, setThemePreference } from "@/utils"
 import TeamsNotReadyDialog from "./TeamsNotReadyDialog.vue"
 
 export default {
@@ -70,6 +78,7 @@ export default {
   data() {
     return {
       showTeamsNotReadyDialog: false,
+      themePreference: localStorage.getItem("themePreference") || "system",
     }
   },
 
@@ -83,6 +92,11 @@ export default {
     },
     showFeedbackBtn() {
       return !(!this.isPhone || this.$route.name === "home")
+    },
+    themeLabel() {
+      if (this.themePreference === "dark") return "Dark"
+      if (this.themePreference === "light") return "Light"
+      return "System"
     },
   },
 
@@ -100,6 +114,16 @@ export default {
     addTeamMember() {
       this.$posthog?.capture("add_team_member_clicked")
       this.showTeamsNotReadyDialog = true
+    },
+    toggleTheme() {
+      const nextTheme =
+        this.themePreference === "system"
+          ? "light"
+          : this.themePreference === "light"
+          ? "dark"
+          : "system"
+      this.themePreference = nextTheme
+      setThemePreference(this.themePreference, this.$vuetify)
     },
   },
 }

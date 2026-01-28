@@ -164,6 +164,53 @@ html.theme--dark,
   border-color: #4b5563;
 }
 
+.theme--dark .tw-bg-white\/70 {
+  background-color: rgba(27, 30, 36, 0.7);
+}
+
+.theme--dark .tw-bg-light-gray\/20 {
+  background-color: rgba(26, 29, 34, 0.2);
+}
+
+.theme--dark .tw-shadow-xl,
+.theme--dark .tw-shadow-md,
+.theme--dark .tw-shadow-sm,
+.theme--dark .tw-shadow-lg,
+.theme--dark .tw-shadow-2xl {
+  box-shadow: none;
+}
+
+.theme--dark .v-card {
+  background-color: #1b1e24;
+  color: #ffffff;
+}
+
+.theme--dark .v-list {
+  background-color: #1b1e24;
+}
+
+.theme--dark .v-menu__content,
+.theme--dark .v-overlay__content {
+  background-color: #1b1e24;
+}
+
+.theme--dark .v-input input,
+.theme--dark .v-input textarea {
+  color: #ffffff;
+}
+
+.theme--dark .v-select__selection,
+.theme--dark .v-list-item__title,
+.theme--dark .v-list-item__subtitle,
+.theme--dark .v-label,
+.theme--dark .v-text-field input {
+  color: #ffffff;
+}
+
+.theme--dark .v-icon {
+  color: #ffffff;
+}
+
 html {
   overflow-y: auto !important;
   /* overscroll-behavior: none; */
