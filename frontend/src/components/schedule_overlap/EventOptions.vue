@@ -15,7 +15,7 @@
         hide-details
       >
         <template v-slot:label>
-          <div class="tw-text-sm tw-text-black">
+          <div class="tw-text-sm tw-text-black dark:tw-text-white">
             Show best {{ event.daysOnly ? "days" : "times" }}
           </div>
         </template>
@@ -29,7 +29,7 @@
         hide-details
       >
         <template v-slot:label>
-          <div class="tw-text-sm tw-text-black">
+          <div class="tw-text-sm tw-text-black dark:tw-text-white">
             Hide if needed {{ event.daysOnly ? "days" : "times" }}
           </div>
         </template>
@@ -43,7 +43,7 @@
         hide-details
       >
         <template v-slot:label>
-          <div class="tw-text-sm tw-text-black">
+          <div class="tw-text-sm tw-text-black dark:tw-text-white">
             Hide not sure {{ event.daysOnly ? "days" : "times" }}
           </div>
         </template>
@@ -56,7 +56,7 @@
         hide-details
       >
         <template v-slot:label>
-          <div class="tw-text-sm tw-text-black">Overlay calendar events</div>
+          <div class="tw-text-sm tw-text-black dark:tw-text-white">Overlay calendar events</div>
         </template>
       </v-switch>
 
@@ -70,7 +70,7 @@
         hide-details
       >
         <template v-slot:label>
-          <div class="tw-text-sm tw-text-black">Start on Monday</div>
+          <div class="tw-text-sm tw-text-black dark:tw-text-white">Start on Monday</div>
         </template>
       </v-switch>
     </div>

@@ -318,7 +318,7 @@
           hide-details
         >
           <template v-slot:label>
-            <div class="tw-text-sm tw-text-black">
+            <div class="tw-text-sm tw-text-black dark:tw-text-white">
               Show best {{ event.daysOnly ? "days" : "times" }}
             </div>
           </template>
@@ -390,7 +390,7 @@
       hide-details
     >
       <template v-slot:label>
-        <div class="tw-text-sm tw-text-black">Overlay calendar events</div>
+        <div class="tw-text-sm tw-text-black dark:tw-text-white">Overlay calendar events</div>
       </template>
     </v-switch>
 
@@ -627,11 +627,19 @@ export default {
       const isNotSure = !this.hideNotSure && this.respondentNotSure(id)
       const isIfNeeded = !this.hideIfNeeded && this.respondentIfNeeded(id)
       if (this.curRespondentsSet.has(id) && (isIfNeeded || isNotSure)) {
-        c.push(isNotSure ? "tw-bg-blue/30" : "tw-bg-yellow")
+        c.push(
+          isNotSure
+            ? "tw-bg-blue/30 dark:tw-bg-blue/50"
+            : "tw-bg-yellow dark:tw-bg-[#99770080]"
+        )
       } else if (this.curRespondents.length === 0 && isNotSure) {
-        c.push("tw-bg-blue/15")
+        c.push("tw-bg-blue/15 dark:tw-bg-blue/35")
       } else if (this.curRespondents.length === 0 && isIfNeeded) {
-        c.push("tw-bg-yellow")
+        c.push("tw-bg-yellow dark:tw-bg-[#99770080]")
+      }
+
+      if (this.$vuetify?.theme?.dark && (isIfNeeded || isNotSure)) {
+        c.push("tw-text-white")
       }
 
       if (!this.curTimeslotAvailability[id]) {

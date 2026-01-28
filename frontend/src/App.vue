@@ -21,7 +21,7 @@
     <div
       v-if="showHeader"
       class="tw-fixed tw-z-40 tw-h-14 tw-w-screen tw-bg-white sm:tw-h-16"
-      dark
+      :class="$vuetify.theme.dark ? 'tw-bg-[#1b1e24]' : 'tw-bg-white'"
     >
       <div
         class="tw-relative tw-m-auto tw-flex tw-h-full tw-max-w-6xl tw-items-center tw-justify-center tw-px-4"
@@ -109,11 +109,15 @@ html.theme--dark,
 }
 
 .theme--dark .tw-text-very-dark-gray {
-  color: #d1d5db;
+  color: #e5e7eb;
 }
 
 .theme--dark .tw-text-dark-gray {
   color: #d1d5db;
+}
+
+.theme--dark .tw-text-gray {
+  color: #9ca3af;
 }
 
 .theme--dark .tw-text-gray {
@@ -194,6 +198,28 @@ html.theme--dark,
   background-color: #1b1e24;
 }
 
+.theme--dark .v-picker__body {
+  background-color: #1b1e24;
+  color: #ffffff;
+}
+
+.theme--dark .v-date-picker-table button {
+  color: #ffffff;
+}
+
+.theme--dark .v-date-picker-table .v-btn__content {
+  color: #ffffff;
+}
+
+.theme--dark .v-date-picker-header,
+.theme--dark .v-date-picker-title {
+  color: #ffffff;
+}
+
+.theme--dark .v-date-picker-table .v-btn {
+  background-color: transparent;
+}
+
 .theme--dark .v-input input,
 .theme--dark .v-input textarea {
   color: #ffffff;
@@ -209,6 +235,14 @@ html.theme--dark,
 
 .theme--dark .v-icon {
   color: #ffffff;
+}
+
+.theme--dark .tw-bg-\[\#f3f3f366\] {
+  background-color: rgba(17, 20, 26, 0.6);
+}
+
+.theme--dark .tw-text-very-dark-gray {
+  color: #e5e7eb;
 }
 
 html {
