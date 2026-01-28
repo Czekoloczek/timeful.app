@@ -37,13 +37,24 @@ const app = new Vue({
   render: (h) => h(App),
 })
 
-const syncVuetifyTheme = () => {
+export const syncVuetifyTheme = (manualPreference = null, vuetifyApp = app) => {
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-  const updateTheme = (event) => {
-    const isDark = event.matches
-    app.$vuetify.theme.dark = isDark
+  const applyTheme = (isDark) => {
+    vuetifyApp.$vuetify.theme.dark = isDark
     document.documentElement.classList.toggle("theme--dark", isDark)
   }
+  const updateTheme = (event) => {
+    applyTheme(event.matches)
+  }
+  if (manualPreference === "light") {
+    applyTheme(false)
+    return
+  }
+  if (manualPreference === "dark") {
+    applyTheme(true)
+    return
+  }
+  applyTheme(mediaQuery.matches)
   if (mediaQuery.addEventListener) {
     mediaQuery.addEventListener("change", updateTheme)
   } else if (mediaQuery.addListener) {
@@ -51,8 +62,6 @@ const syncVuetifyTheme = () => {
   }
 }
 
-const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-app.$vuetify.theme.dark = isDark
-document.documentElement.classList.toggle("theme--dark", isDark)
-syncVuetifyTheme()
+const storedTheme = localStorage.getItem("themePreference")
+syncVuetifyTheme(storedTheme, app)
 app.$mount("#app")

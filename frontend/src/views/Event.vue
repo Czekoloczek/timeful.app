@@ -312,6 +312,9 @@
         >
           Privacy Policy
         </router-link>
+        <div class="tw-mt-1 tw-text-xs tw-text-gray">
+          Version {{ version }}
+        </div>
       </div>
 
       <div class="tw-h-8"></div>
@@ -478,6 +481,11 @@ export default {
     ...mapState(["authUser", "events"]),
     allowScheduleEvent() {
       return this.scheduleOverlapComponent?.allowScheduleEvent
+    },
+    version() {
+      const version = process.env.VUE_APP_VERSION || "0.0.0"
+      const commit = process.env.VUE_APP_COMMIT
+      return commit ? `${version} (${commit})` : version
     },
     calendarTypes() {
       return calendarTypes

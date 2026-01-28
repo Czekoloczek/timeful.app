@@ -120,6 +120,18 @@ html.theme--dark,
   color: #9ca3af;
 }
 
+.theme--dark .tw-text-black {
+  color: #ffffff;
+}
+
+.theme--dark .tw-text-green {
+  color: #4ade80;
+}
+
+.theme--dark .tw-text-red {
+  color: #fca5a5;
+}
+
 .theme--dark .tw-bg-white {
   background-color: #1b1e24;
 }
@@ -132,12 +144,24 @@ html.theme--dark,
   background-color: #14181d;
 }
 
+.theme--dark .tw-bg-green {
+  background-color: #11653b;
+}
+
+.theme--dark .tw-bg-light-gray-stroke {
+  background-color: #20232a;
+}
+
 .theme--dark .tw-border-light-gray-stroke {
   border-color: #2d3139;
 }
 
 .theme--dark .tw-border-gray {
   border-color: #3a3f47;
+}
+
+.theme--dark .tw-border-white {
+  border-color: #4b5563;
 }
 
 html {

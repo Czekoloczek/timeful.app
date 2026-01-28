@@ -143,6 +143,29 @@
         </div>
       </div>
 
+      <div class="tw-flex tw-flex-col tw-gap-5">
+        <div
+          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+        >
+          Appearance
+        </div>
+        <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
+          <div class="tw-text-black">
+            Toggle dark mode manually or let it sync with your system.
+          </div>
+          <div class="tw-flex tw-items-center tw-gap-4">
+            <v-select
+              v-model="themePreference"
+              :items="themeOptions"
+              dense
+              hide-details
+              outlined
+              class="tw-w-48"
+            />
+          </div>
+        </div>
+      </div>
+
       <!-- Delete Account Section -->
       <div class="tw-mt-28 tw-flex tw-flex-row tw-justify-center">
         <div class="tw-w-64">
@@ -190,7 +213,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex"
-import { _delete, patch, isPhone, get } from "@/utils"
+import { _delete, patch, isPhone, get, setThemePreference } from "@/utils"
 import CalendarAccounts from "@/components/settings/CalendarAccounts.vue"
 
 export default {
@@ -223,6 +246,12 @@ export default {
     // Profile settings
     firstName: "",
     lastName: "",
+    themePreference: "system",
+    themeOptions: [
+      { text: "System", value: "system" },
+      { text: "Light", value: "light" },
+      { text: "Dark", value: "dark" },
+    ],
   }),
 
   computed: {
@@ -243,6 +272,9 @@ export default {
 
   methods: {
     ...mapActions(["showError"]),
+    applyThemePreference() {
+      setThemePreference(this.themePreference, this.$vuetify)
+    },
     openBillingPortal() {
       get(
         `/stripe/billing-portal?customerId=${encodeURIComponent(
@@ -292,6 +324,16 @@ export default {
   created() {
     this.firstName = this.authUser.firstName
     this.lastName = this.authUser.lastName
+    const storedTheme = localStorage.getItem("themePreference")
+    if (storedTheme) {
+      this.themePreference = storedTheme
+    }
+    this.applyThemePreference()
+  },
+  watch: {
+    themePreference() {
+      this.applyThemePreference()
+    },
   },
 }
 </script>

@@ -141,7 +141,9 @@ export default {
       return this.events.length > 0
     },
     version() {
-      return process.env.VUE_APP_VERSION || "0.0.0"
+      const version = process.env.VUE_APP_VERSION || "0.0.0"
+      const commit = process.env.VUE_APP_COMMIT
+      return commit ? `${version} (${commit})` : version
     },
     isPhone() {
       return isPhone(this.$vuetify)
