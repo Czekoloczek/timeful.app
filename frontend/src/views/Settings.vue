@@ -156,16 +156,16 @@
           <div class="tw-flex tw-items-center tw-gap-4">
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              class="tw-text-black dark:tw-text-white"
-              outlined
-              v-bind="attrs"
-              v-on="on"
-            >
+                <v-btn
+                  class="tw-text-black dark:tw-text-white"
+                  outlined
+                  v-bind="attrs"
+                  v-on="on"
+                >
                   Theme: {{ themeLabel }}
                 </v-btn>
               </template>
-              <v-list dense>
+              <v-list dense class="dark:tw-bg-[#1b1e24]">
                 <v-list-item @click="setTheme('system')">
                   <v-list-item-title>System</v-list-item-title>
                 </v-list-item>
