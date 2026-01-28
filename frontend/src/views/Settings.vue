@@ -4,7 +4,7 @@
       <!-- Name change section -->
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Profile
         </div>
@@ -49,12 +49,12 @@
         class="tw-flex tw-flex-col tw-gap-5"
       >
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Billing
         </div>
         <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
-          <div class="tw-text-black">
+          <div class="tw-text-black dark:tw-text-white">
             <v-btn @click="openBillingPortal">Manage billing</v-btn>
           </div>
         </div>
@@ -63,12 +63,12 @@
       <!-- Calendar Access Section -->
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Calendar access
         </div>
         <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
-          <div class="tw-text-black">
+          <div class="tw-text-black dark:tw-text-white">
             We do not store your calendar data anywhere on our servers, and we
             only fetch your calendar events for the time frame you specify in
             order to display your calendar events while you fill out your
@@ -88,7 +88,7 @@
       <!-- Permissions Section -->
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Permissions
         </div>
@@ -126,16 +126,16 @@
       <!-- Question Section -->
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Have a question?
         </div>
         <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
-          <div class="tw-text-black">
+          <div class="tw-text-black dark:tw-text-white">
             Email us at
             <a
               href="mailto:contact@timeful.app"
-              class="tw-text-black tw-underline"
+              class="tw-text-black dark:tw-text-white tw-underline"
               >contact@timeful.app</a
             >
             with any questions!
@@ -145,23 +145,38 @@
 
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Appearance
         </div>
         <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
-          <div class="tw-text-black">
+          <div class="tw-text-black dark:tw-text-white">
             Toggle dark mode manually or let it sync with your system.
           </div>
           <div class="tw-flex tw-items-center tw-gap-4">
-            <v-select
-              v-model="themePreference"
-              :items="themeOptions"
-              dense
-              hide-details
+            <v-menu offset-y>
+              <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              class="tw-text-black dark:tw-text-white"
               outlined
-              class="tw-w-48"
-            />
+              v-bind="attrs"
+              v-on="on"
+            >
+                  Theme: {{ themeLabel }}
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item @click="setTheme('system')">
+                  <v-list-item-title>System</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="setTheme('light')">
+                  <v-list-item-title>Light</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="setTheme('dark')">
+                  <v-list-item-title>Dark</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </div>
         </div>
       </div>
@@ -247,11 +262,6 @@ export default {
     firstName: "",
     lastName: "",
     themePreference: localStorage.getItem("themePreference") || "system",
-    themeOptions: [
-      { text: "System", value: "system" },
-      { text: "Light", value: "light" },
-      { text: "Dark", value: "dark" },
-    ],
   }),
 
   computed: {
@@ -268,12 +278,20 @@ export default {
     isPhone() {
       return isPhone(this.$vuetify)
     },
+    themeLabel() {
+      if (this.themePreference === "dark") return "Dark"
+      if (this.themePreference === "light") return "Light"
+      return "System"
+    },
   },
 
   methods: {
     ...mapActions(["showError"]),
     applyThemePreference() {
       setThemePreference(this.themePreference, this.$vuetify)
+    },
+    setTheme(value) {
+      this.themePreference = value
     },
     openBillingPortal() {
       get(

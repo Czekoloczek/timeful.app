@@ -337,7 +337,7 @@
           <v-spacer />
           <v-btn
             v-if="!isGroup && !authUser && selectedGuestRespondent"
-            class="tw-bg-white tw-text-green tw-transition-opacity"
+            class="tw-bg-white dark:tw-bg-[#1b1e24] tw-text-green tw-transition-opacity"
             :style="{ opacity: availabilityBtnOpacity }"
             @click="editGuestAvailability"
           >
@@ -345,7 +345,7 @@
           </v-btn>
           <v-btn
             v-else
-            class="tw-bg-white tw-text-green tw-transition-opacity"
+            class="tw-bg-white dark:tw-bg-[#1b1e24] tw-text-green tw-transition-opacity"
             :disabled="loading && !userHasResponded"
             :style="{ opacity: availabilityBtnOpacity }"
             @click="() => addAvailability()"
@@ -358,7 +358,7 @@
             Cancel
           </v-btn>
           <v-spacer />
-          <v-btn class="tw-bg-white tw-text-green" @click="() => saveChanges()">
+          <v-btn class="tw-bg-white dark:tw-bg-[#1b1e24] tw-text-green" @click="() => saveChanges()">
             Save
           </v-btn>
         </template>
@@ -369,7 +369,7 @@
           <v-spacer />
           <v-btn
             :disabled="!allowScheduleEvent"
-            class="tw-bg-white tw-text-blue"
+            class="tw-bg-white dark:tw-bg-[#1b1e24] tw-text-blue"
             @click="confirmScheduleEvent"
           >
             Schedule

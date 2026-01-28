@@ -3286,11 +3286,11 @@ export default {
         if (this.defaultState === this.states.BEST_TIMES) {
           if (max > 0 && numRespondents === max) {
             const base =
-              availableCount > 0
-                ? colors.available
+              visibleNotSure > 0
+                ? colors.notSure
                 : visibleIfNeeded > 0
                 ? colors.ifNeeded
-                : colors.notSure
+                : colors.available
             if (totalRespondents === 1 || this.overlayAvailability) {
               s.backgroundColor = colorWithAlpha(base, 0.53)
             } else {
@@ -3305,15 +3305,17 @@ export default {
                   ? this.curRespondents[0]
                   : this.respondents[0]._id
               if (
+                this.parsedResponses[respondentId]?.notSure?.has(date.getTime())
+              ) {
+                s.backgroundColor = this.$vuetify?.theme?.dark
+                  ? "#3b82f6b3"
+                  : "#3b82f666"
+              } else if (
                 this.parsedResponses[respondentId]?.ifNeeded?.has(
                   date.getTime()
                 )
               ) {
-                c += "tw-bg-yellow "
-              } else if (
-                this.parsedResponses[respondentId]?.notSure?.has(date.getTime())
-              ) {
-                s.backgroundColor = "#3b82f666"
+                c += "tw-bg-yellow dark:tw-bg-[#99770080] "
               } else {
                 const green = "#00994C88"
                 s.backgroundColor = green
@@ -3346,11 +3348,11 @@ export default {
               }
 
               const base =
-                availableCount > 0
-                  ? colors.available
+                visibleNotSure > 0
+                  ? colors.notSure
                   : visibleIfNeeded > 0
                   ? colors.ifNeeded
-                  : colors.notSure
+                  : colors.available
               s.backgroundColor = `${base}${alpha}`
             }
           } else if (totalRespondents === 1) {
@@ -3383,7 +3385,8 @@ export default {
         }
       } else {
         classStyle = {
-          class: "tw-bg-off-white tw-text-gray ",
+          class:
+            "tw-bg-off-white dark:tw-bg-[#1a1d22] tw-text-gray dark:tw-text-gray-300 ",
           style: {},
         }
       }
@@ -3408,17 +3411,19 @@ export default {
       ) {
         // Dashed border for currently selected timeslot
         classStyle.class +=
-          "tw-outline-2 tw-outline-dashed tw-outline-black tw-z-10 "
+          "tw-outline-2 tw-outline-dashed tw-outline-black dark:tw-outline-white tw-z-10 "
       } else {
         // Normal border
-        if (col === 0) classStyle.class += "tw-border-l tw-border-l-gray "
-        classStyle.class += "tw-border-r tw-border-r-gray "
+        if (col === 0)
+          classStyle.class += "tw-border-l tw-border-l-gray dark:tw-border-l-[#4b5563] "
+        classStyle.class += "tw-border-r tw-border-r-gray dark:tw-border-r-[#4b5563] "
         if (col !== 7 - 1) {
           classStyle.style.borderRightStyle = "dashed"
         }
 
-        if (row === 0) classStyle.class += "tw-border-t tw-border-t-gray "
-        classStyle.class += "tw-border-b tw-border-b-gray "
+        if (row === 0)
+          classStyle.class += "tw-border-t tw-border-t-gray dark:tw-border-t-[#4b5563] "
+        classStyle.class += "tw-border-b tw-border-b-gray dark:tw-border-b-[#4b5563] "
         if (row !== Math.floor(this.monthDays.length / 7)) {
           classStyle.style.borderBottomStyle = "dashed"
         }

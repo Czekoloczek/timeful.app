@@ -220,6 +220,11 @@ html.theme--dark,
   background-color: transparent;
 }
 
+.theme--dark .v-hover-btn,
+.theme--dark .v-hover {
+  background-color: transparent;
+}
+
 .theme--dark .v-input input,
 .theme--dark .v-input textarea {
   color: #ffffff;

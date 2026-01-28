@@ -9,9 +9,9 @@
           </v-avatar>
         </v-btn>
       </template>
-      <v-list class="py-0" :dense="isPhone">
+      <v-list class="py-0 dark:tw-bg-[#1b1e24]" :dense="isPhone">
         <v-list-item>
-          <v-list-item-title>
+          <v-list-item-title class="dark:tw-text-white">
             <strong>{{ `${authUser.firstName} ${authUser.lastName}` }}</strong>
           </v-list-item-title>
         </v-list-item>
@@ -29,23 +29,15 @@
           href="https://forms.gle/A96i4TTWeKgH3P1W6"
           target="_blank"
         >
-          <v-list-item-title class="tw-flex tw-items-center tw-gap-1">
+          <v-list-item-title class="tw-flex tw-items-center tw-gap-1 dark:tw-text-white">
             <v-icon class="tw-mr-1" small color="black">mdi-message</v-icon>
             Give feedback
           </v-list-item-title>
         </v-list-item>
         <v-list-item id="settings-btn" @click="goToSettings">
-          <v-list-item-title class="tw-flex tw-items-center tw-gap-1">
+          <v-list-item-title class="tw-flex tw-items-center tw-gap-1 dark:tw-text-white">
             <v-icon class="tw-mr-1" small color="black">mdi-cog</v-icon>
             Settings
-          </v-list-item-title>
-        </v-list-item>
-        <v-list-item id="theme-btn" @click="toggleTheme">
-          <v-list-item-title class="tw-flex tw-items-center tw-gap-1">
-            <v-icon class="tw-mr-1" small color="black"
-              >mdi-theme-light-dark</v-icon
-            >
-            Theme: {{ themeLabel }}
           </v-list-item-title>
         </v-list-item>
         <v-divider></v-divider>
@@ -64,7 +56,7 @@
 <script>
 import UserAvatarContent from "@/components/UserAvatarContent"
 import { mapState, mapMutations } from "vuex"
-import { post, isPhone, setThemePreference } from "@/utils"
+import { post, isPhone } from "@/utils"
 import TeamsNotReadyDialog from "./TeamsNotReadyDialog.vue"
 
 export default {
@@ -78,7 +70,6 @@ export default {
   data() {
     return {
       showTeamsNotReadyDialog: false,
-      themePreference: localStorage.getItem("themePreference") || "system",
     }
   },
 
@@ -92,11 +83,6 @@ export default {
     },
     showFeedbackBtn() {
       return !(!this.isPhone || this.$route.name === "home")
-    },
-    themeLabel() {
-      if (this.themePreference === "dark") return "Dark"
-      if (this.themePreference === "light") return "Light"
-      return "System"
     },
   },
 
@@ -114,16 +100,6 @@ export default {
     addTeamMember() {
       this.$posthog?.capture("add_team_member_clicked")
       this.showTeamsNotReadyDialog = true
-    },
-    toggleTheme() {
-      const nextTheme =
-        this.themePreference === "system"
-          ? "light"
-          : this.themePreference === "light"
-          ? "dark"
-          : "system"
-      this.themePreference = nextTheme
-      setThemePreference(this.themePreference, this.$vuetify)
     },
   },
 }
