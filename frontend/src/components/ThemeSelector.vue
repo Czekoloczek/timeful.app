@@ -1,12 +1,17 @@
 <template>
-  <div class="tw-flex tw-flex-col tw-gap-2">
-    <div class="tw-text-sm tw-font-medium tw-text-dark-green dark:tw-text-white">
+  <div class="tw-flex tw-flex-col" :class="compact ? 'tw-gap-1' : 'tw-gap-2'">
+    <div
+      class="tw-font-medium tw-text-dark-green dark:tw-text-white"
+      :class="compact ? 'tw-text-xs' : 'tw-text-sm'"
+    >
       Theme
     </div>
     <v-menu offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           class="tw-text-black dark:tw-text-white"
+          :small="compact"
+          :class="compact ? 'tw-text-xs tw-px-2' : ''"
           outlined
           v-bind="attrs"
           v-on="on"
@@ -14,7 +19,7 @@
           Theme: {{ themeLabel }}
         </v-btn>
       </template>
-      <v-list dense class="dark:tw-bg-[#1b1e24]">
+      <v-list :dense="compact" class="dark:tw-bg-[#1b1e24]">
         <v-list-item @click="setTheme('system')">
           <v-list-item-title>System</v-list-item-title>
         </v-list-item>
@@ -35,6 +40,7 @@ export default {
 
   props: {
     themePreference: { type: String, required: true },
+    compact: { type: Boolean, default: false },
   },
 
   computed: {

@@ -66,6 +66,11 @@
         >
           Donate
         </v-btn>
+        <ThemeSelector
+          class="tw-ml-2"
+          :themePreference.sync="themePreference"
+          compact
+        />
         <v-btn
           v-if="$route.name === 'home' && !isPhone"
           color="primary"
@@ -383,6 +388,7 @@ import {
   signInGoogle,
   signInOutlook,
   isPremiumUser,
+  setThemePreference,
 } from "@/utils"
 import {
   authTypes,
@@ -402,6 +408,7 @@ import UpgradeDialog from "@/components/pricing/UpgradeDialog.vue"
 import SignInDialog from "@/components/SignInDialog.vue"
 import DiscordBanner from "@/components/DiscordBanner.vue"
 import CookieConsent from "@/components/CookieConsent.vue"
+import ThemeSelector from "@/components/ThemeSelector.vue"
 
 export default {
   name: "App",
@@ -423,6 +430,7 @@ export default {
     SignInDialog,
     DiscordBanner,
     CookieConsent,
+    ThemeSelector,
   },
 
   data: () => ({
@@ -431,6 +439,7 @@ export default {
     scrollY: 0,
     webviewDialog: false,
     signInDialog: false,
+    themePreference: localStorage.getItem("themePreference") || "system",
   }),
 
   computed: {
@@ -485,6 +494,9 @@ export default {
     ]),
     handleScroll(e) {
       this.scrollY = window.scrollY
+    },
+    applyThemePreference() {
+      setThemePreference(this.themePreference, this.$vuetify)
     },
     _createNew(eventOnly = false) {
       this.$posthog.capture("create_new_button_clicked", {
@@ -573,6 +585,7 @@ export default {
       })
       .finally(() => {
         this.loaded = true
+        this.applyThemePreference()
       })
 
     // Event listeners
@@ -591,6 +604,9 @@ export default {
   },
 
   watch: {
+    themePreference() {
+      this.applyThemePreference()
+    },
     $route: {
       immediate: true,
       async handler() {
