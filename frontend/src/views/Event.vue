@@ -95,13 +95,17 @@
 
       <div class="tw-mx-auto tw-mt-4 tw-max-w-5xl">
         <div v-if="!isSettingSpecificTimes" class="tw-mx-4">
-          <!-- Title and copy link -->
-          <div class="tw-flex tw-items-center tw-text-black">
-            <div>
-              <div
-                class="sm:mb-2 tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2"
-              >
-            <div class="tw-text-xl sm:tw-text-3xl tw-text-black dark:tw-text-white">{{ event.name }}</div>
+            <!-- Title and copy link -->
+            <div class="tw-flex tw-items-center tw-text-black dark:tw-text-white">
+              <div>
+                <div
+                  class="sm:mb-2 tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2"
+                >
+                  <div
+                    class="tw-text-xl sm:tw-text-3xl tw-text-black dark:tw-text-white"
+                  >
+                    {{ event.name }}
+                  </div>
                 <v-chip
                   v-if="event.when2meetHref?.length > 0"
                   :href="`https://when2meet.com${event.when2meetHref}`"
@@ -242,6 +246,37 @@
             :event.sync="event"
             :canEdit="event.ownerId != 0 && canEdit"
           />
+        </div>
+
+        <div
+          class="tw-mx-4 tw-mt-4 tw-rounded-md tw-border tw-border-light-gray-stroke tw-bg-white dark:tw-bg-[#1b1e24] tw-px-6 tw-py-4"
+        >
+          <div class="tw-mb-2 tw-text-sm tw-font-medium tw-text-dark-green dark:tw-text-white">
+            Theme
+          </div>
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                class="tw-text-black dark:tw-text-white"
+                outlined
+                v-bind="attrs"
+                v-on="on"
+              >
+                Theme: {{ themeLabel }}
+              </v-btn>
+            </template>
+            <v-list dense class="dark:tw-bg-[#1b1e24]">
+              <v-list-item @click="setTheme('system')">
+                <v-list-item-title>System</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="setTheme('light')">
+                <v-list-item-title>Light</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="setTheme('dark')">
+                <v-list-item-title>Dark</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
 
         <!-- Calendar -->
@@ -393,6 +428,7 @@ import {
   isIOS,
   isDstObserved,
   doesDstExist,
+  setThemePreference,
 } from "@/utils"
 import { mapActions, mapState, mapMutations } from "vuex"
 
@@ -458,6 +494,7 @@ export default {
     weekOffset: 0,
 
     availabilityBtnOpacity: 1,
+    themePreference: localStorage.getItem("themePreference") || "system",
     hasRefetchedAuthUserCalendarEvents: false,
 
     // Availability Groups
@@ -475,6 +512,13 @@ export default {
     if (this.linkApple) {
       this.choiceDialog = true
     }
+
+    this.applyThemePreference()
+  },
+  watch: {
+    themePreference() {
+      this.applyThemePreference()
+    },
   },
 
   computed: {
@@ -484,6 +528,11 @@ export default {
     },
     version() {
       return process.env.VUE_APP_COMMIT || "unknown"
+    },
+    themeLabel() {
+      if (this.themePreference === "dark") return "Dark"
+      if (this.themePreference === "light") return "Light"
+      return "System"
     },
     calendarTypes() {
       return calendarTypes
@@ -565,6 +614,13 @@ export default {
   methods: {
     ...mapActions(["showError", "showInfo", "getEvents"]),
     ...mapMutations(["setAuthUser"]),
+    applyThemePreference() {
+      setThemePreference(this.themePreference, this.$vuetify)
+    },
+    setTheme(value) {
+      this.themePreference = value
+      setThemePreference(this.themePreference, this.$vuetify)
+    },
     /** Show choice dialog if not signed in, otherwise, immediately start editing availability */
     addAvailability() {
       if (!this.scheduleOverlapComponent) return

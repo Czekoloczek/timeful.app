@@ -101,7 +101,7 @@
                 <div class="tw-text-sm">
                   Email support at
                   <span class="tw-text-green tw-underline"
-                    >contact@timeful.app</span
+                    >timeful@pierdolnik.xyz</span
                   >
                 </div>
               </v-card>

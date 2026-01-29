@@ -34,7 +34,7 @@
       </v-fade-transition>
 
       <div
-        class="tw-rounded-md tw-px-6 tw-py-4 sm:tw-mx-4 sm:tw-bg-[#f3f3f366] dark:sm:tw-bg-[#1b1e24]"
+        class="tw-rounded-md tw-px-6 tw-py-4 sm:tw-mx-4 sm:tw-bg-[#f3f3f366] dark:sm:tw-bg-[#111318]"
         v-if="!loading || eventsNotEmpty"
       >
         <div
@@ -58,11 +58,42 @@
         ></div>
       </div>
 
+      <div
+        class="tw-mx-auto tw-max-w-6xl tw-rounded-md tw-border tw-border-light-gray-stroke tw-bg-white dark:tw-bg-[#1b1e24] tw-px-6 tw-py-4 sm:tw-mx-4"
+      >
+        <div class="tw-mb-2 tw-text-sm tw-font-medium tw-text-dark-green dark:tw-text-white">
+          Theme
+        </div>
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              class="tw-text-black dark:tw-text-white"
+              outlined
+              v-bind="attrs"
+              v-on="on"
+            >
+              Theme: {{ themeLabel }}
+            </v-btn>
+          </template>
+          <v-list dense class="dark:tw-bg-[#1b1e24]">
+            <v-list-item @click="setTheme('system')">
+              <v-list-item-title>System</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="setTheme('light')">
+              <v-list-item-title>Light</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="setTheme('dark')">
+              <v-list-item-title>Dark</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+
        <div class="tw-flex tw-flex-col tw-items-center tw-justify-between">
-         <router-link
-           class="tw-text-xs tw-font-medium tw-text-gray"
-           :to="{ name: 'privacy-policy' }"
-         >
+        <router-link
+          class="tw-text-xs tw-font-medium tw-text-gray"
+          :to="{ name: 'privacy-policy' }"
+        >
            Privacy Policy
          </router-link>
          <div class="tw-mt-1 tw-text-xs tw-text-gray">
@@ -93,7 +124,7 @@ import When2meetImportDialog from "@/components/When2meetImportDialog.vue"
 import Dashboard from "@/components/home/Dashboard.vue"
 import { mapState, mapActions, mapMutations } from "vuex"
 import { eventTypes } from "@/constants"
-import { isPhone, get } from "@/utils"
+import { isPhone, get, setThemePreference } from "@/utils"
 import FormerlyKnownAs from "@/components/FormerlyKnownAs.vue"
 
 export default {
@@ -123,6 +154,7 @@ export default {
   data: () => ({
     loading: true,
     showW2MDialog: false,
+    themePreference: localStorage.getItem("themePreference") || "system",
   }),
 
   mounted() {
@@ -143,6 +175,11 @@ export default {
     version() {
       return process.env.VUE_APP_COMMIT || "unknown"
     },
+    themeLabel() {
+      if (this.themePreference === "dark") return "Dark"
+      if (this.themePreference === "light") return "Light"
+      return "System"
+    },
     isPhone() {
       return isPhone(this.$vuetify)
     },
@@ -151,6 +188,9 @@ export default {
   methods: {
     ...mapMutations(["setAuthUser", "setNewDialogOptions"]),
     ...mapActions(["getEvents", "createNew"]),
+    applyThemePreference() {
+      setThemePreference(this.themePreference, this.$vuetify)
+    },
     userRespondedToEvent(event) {
       return event.hasResponded ?? false
     },
@@ -162,6 +202,15 @@ export default {
       this.showW2MDialog = true
       this.$posthog?.capture("convert_when2meet_to_timeful_clicked")
     },
+    setTheme(value) {
+      this.themePreference = value
+      setThemePreference(this.themePreference, this.$vuetify)
+    },
+  },
+  watch: {
+    themePreference() {
+      this.applyThemePreference()
+    },
   },
 
   created() {
@@ -171,9 +220,11 @@ export default {
     get("/user/profile")
       .then((authUser) => {
         this.setAuthUser(authUser)
+        this.applyThemePreference()
       })
       .catch(() => {
         this.setAuthUser(null)
+        this.applyThemePreference()
       })
   },
 }

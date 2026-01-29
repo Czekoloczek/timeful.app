@@ -48,6 +48,7 @@ Built with [Vue 2](https://github.com/vuejs/vue), [MongoDB](https://github.com/m
    - MongoDB running and accessible
 2. **Environment**
    - Copy `.env.example` to `.env` in `/server` and fill values (Mongo URI, JWT secret, email/stripe keys as needed).
+   - For the frontend, create `frontend/.env.local` with any `VUE_APP_*` overrides you need (e.g., API base URL).
 3. **Install**
    - Frontend: `cd frontend && npm install`
    - Backend: `cd server && go mod download`
@@ -57,5 +58,8 @@ Built with [Vue 2](https://github.com/vuejs/vue), [MongoDB](https://github.com/m
 5. **Build for production**
    - Frontend: `npm run build` (outputs to `frontend/dist`)
    - Serve built assets via your preferred web server; point API calls to the running Go server.
+6. **Updating**
+   - Pull the latest changes, then re-run `npm install` (frontend) and `go mod download` (server) if dependencies changed.
+   - Rebuild the frontend (`npm run build`) and restart the Go server after updates.
 
 Tip: When deploying, ensure environment vars match your production Mongo/SMTP/Stripe config and that the frontend `VUE_APP_API_URL` points to your API host.

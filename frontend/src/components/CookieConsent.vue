@@ -1,22 +1,22 @@
 <template>
-  <div
-    v-if="showBanner"
-    class="tw-fixed tw-bottom-5 tw-right-5 tw-z-50 tw-w-80 tw-max-w-[calc(100vw-40px)] tw-rounded-xl tw-bg-white tw-shadow-2xl max-[480px]:tw-bottom-2.5 max-[480px]:tw-left-2.5 max-[480px]:tw-w-[calc(100vw-20px)] max-[480px]:tw-max-w-none"
-  >
+    <div
+      v-if="showBanner"
+      class="tw-fixed tw-bottom-5 tw-right-5 tw-z-50 tw-w-80 tw-max-w-[calc(100vw-40px)] tw-rounded-xl tw-bg-white dark:tw-bg-[#1b1e24] tw-shadow-2xl max-[480px]:tw-bottom-2.5 max-[480px]:tw-left-2.5 max-[480px]:tw-w-[calc(100vw-20px)] max-[480px]:tw-max-w-none"
+    >
     <div
       class="tw-flex tw-items-center tw-justify-between tw-px-4 tw-pt-4 tw-font-medium"
     >
-      <h3>We value your privacy</h3>
+      <h3 class="tw-text-gray-900 dark:tw-text-white">We value your privacy</h3>
       <button
         @click="showBanner = false"
-        class="tw-text-gray-400 hover:tw-bg-gray-100 hover:tw-text-gray-700 tw-flex tw-h-6 tw-w-6 tw-cursor-pointer tw-items-center tw-justify-center tw-rounded tw-border-0 tw-bg-transparent tw-p-0 tw-text-xl tw-transition-all tw-duration-200"
+      class="tw-text-gray-400 hover:tw-bg-gray-100 hover:tw-text-gray-700 dark:hover:tw-bg-[#2d3139] tw-flex tw-h-6 tw-w-6 tw-cursor-pointer tw-items-center tw-justify-center tw-rounded tw-border-0 tw-bg-transparent tw-p-0 tw-text-xl tw-transition-all tw-duration-200"
       >
         &times;
       </button>
     </div>
 
     <p
-      class="tw-text-gray-600 tw-m-0 tw-px-4 tw-py-2 tw-text-xs tw-leading-tight"
+      class="tw-text-gray-600 dark:tw-text-gray-300 tw-m-0 tw-px-4 tw-py-2 tw-text-xs tw-leading-tight"
     >
       We use cookies for analytics to improve our product. Choose your
       preferences below.
@@ -29,7 +29,7 @@
       >
         <v-checkbox v-model="preferences.necessary" disabled hide-details>
           <template v-slot:label>
-            <span class="tw-text-gray-700 tw-flex-1 tw-text-sm tw-font-medium"
+            <span class="tw-text-gray-700 dark:tw-text-gray-200 tw-flex-1 tw-text-sm tw-font-medium"
               >Essential</span
             >
           </template>
@@ -37,7 +37,7 @@
 
         <v-checkbox v-model="preferences.analytics" hide-details>
           <template v-slot:label>
-            <span class="tw-text-gray-700 tw-flex-1 tw-text-sm tw-font-medium"
+            <span class="tw-text-gray-700 dark:tw-text-gray-200 tw-flex-1 tw-text-sm tw-font-medium"
               >Analytics</span
             >
           </template>
@@ -58,7 +58,7 @@
       >
         <button
           @click="showCustomizeSection = !showCustomizeSection"
-          class="tw-w-full tw-flex-1 tw-cursor-pointer tw-rounded-md tw-border tw-border-solid tw-border-gray tw-bg-white tw-px-3 tw-py-2 tw-text-xs tw-font-medium tw-text-very-dark-gray sm:tw-w-auto"
+          class="tw-w-full tw-flex-1 tw-cursor-pointer tw-rounded-md tw-border tw-border-solid tw-border-gray tw-bg-white dark:tw-bg-[#1b1e24] tw-px-3 tw-py-2 tw-text-xs tw-font-medium tw-text-very-dark-gray dark:tw-text-gray-200 sm:tw-w-auto"
         >
           Customize
         </button>

@@ -76,7 +76,7 @@
         <div class="tw-text-sm tw-font-medium tw-text-dark-gray">
           Email
           <span class="tw-font-medium tw-text-green tw-underline"
-            >contact@timeful.app</span
+            >timeful@pierdolnik.xyz</span
           >
           from your student email with:
           <ul class="tw-list-decimal tw-py-4 tw-pl-4">

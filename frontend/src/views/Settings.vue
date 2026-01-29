@@ -134,9 +134,9 @@
           <div class="tw-text-black dark:tw-text-white">
             Email us at
             <a
-              href="mailto:contact@timeful.app"
+              href="mailto:timeful@pierdolnik.xyz"
               class="tw-text-black dark:tw-text-white tw-underline"
-              >contact@timeful.app</a
+              >timeful@pierdolnik.xyz</a
             >
             with any questions!
           </div>
@@ -347,6 +347,11 @@ export default {
       this.themePreference = storedTheme
     }
     this.applyThemePreference()
+  },
+  mounted() {
+    if (!this.authUser) {
+      this.$router.replace({ name: "home" })
+    }
   },
   watch: {
     themePreference() {
