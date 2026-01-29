@@ -175,7 +175,7 @@
                 </div>
                 <div
                   v-if="isOwner && event.collectEmails"
-                  class="email-hover-target tw-flex tw-items-center tw-rounded-sm tw-p-px tw-text-xs tw-text-dark-gray tw-transition-all hover:tw-bg-light-gray"
+                  class="email-hover-target tw-flex tw-items-center tw-rounded-sm tw-p-px tw-text-xs tw-text-dark-gray tw-transition-all hover:tw-bg-light-gray dark:tw-text-gray-200 dark:hover:tw-bg-[#2d3139]"
                   :class="respondentClass(user._id)"
                   @mouseover.stop
                   @click.stop="copyEmailToClipboard(user.email)"
@@ -194,16 +194,39 @@
                   <v-menu right offset-x>
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn icon v-on="on" v-bind="attrs">
-                        <v-icon small color="#4F4F4F">mdi-dots-vertical</v-icon>
+                        <v-icon
+                          small
+                          class="tw-text-gray-500 dark:tw-text-gray-200"
+                          >mdi-dots-vertical</v-icon
+                        >
                       </v-btn>
                     </template>
-                    <v-list class="tw-py-1" dense>
+                    <v-list class="tw-py-1 dark:tw-bg-[#1b1e24]" dense>
                       <v-list-item
                         v-if="isGuest(user)"
                         @click="$emit('editGuestAvailability', user._id)"
                       >
-                        <v-list-item-title class="tw-flex tw-items-center">
-                          <v-icon small class="tw-mr-2" color="#4F4F4F"
+                        <v-list-item-title
+                          class="tw-flex tw-items-center dark:tw-text-white"
+                        >
+                          <v-icon
+                            small
+                            class="tw-mr-2 tw-text-gray-500 dark:tw-text-gray-200"
+                            >mdi-pencil</v-icon
+                          >
+                          Edit
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        v-else-if="isOwner && !isGroup"
+                        @click="$emit('editGuestAvailability', user._id)"
+                      >
+                        <v-list-item-title
+                          class="tw-flex tw-items-center dark:tw-text-white"
+                        >
+                          <v-icon
+                            small
+                            class="tw-mr-2 tw-text-gray-500 dark:tw-text-gray-200"
                             >mdi-pencil</v-icon
                           >
                           Edit
@@ -213,8 +236,12 @@
                         v-if="isOwner && !isGroup"
                         @click="() => showDeleteAvailabilityDialog(user)"
                       >
-                        <v-list-item-title class="tw-flex tw-items-center">
-                          <v-icon small class="tw-mr-2" color="#4F4F4F"
+                        <v-list-item-title
+                          class="tw-flex tw-items-center dark:tw-text-white"
+                        >
+                          <v-icon
+                            small
+                            class="tw-mr-2 tw-text-gray-500 dark:tw-text-gray-200"
                             >mdi-delete</v-icon
                           >
                           Delete
@@ -228,17 +255,23 @@
                     v-if="isGuest(user)"
                     small
                     icon
-                    class="tw-bg-white"
+                    class="tw-bg-white dark:tw-bg-[#1b1e24]"
                     @click="$emit('editGuestAvailability', user._id)"
-                    ><v-icon small color="#4F4F4F">mdi-pencil</v-icon></v-btn
+                    ><v-icon
+                      small
+                      class="tw-text-gray-500 dark:tw-text-gray-200"
+                      >mdi-pencil</v-icon
+                    ></v-btn
                   >
                   <v-btn
                     v-if="isOwner && !isGroup"
                     small
                     icon
-                    class="tw-bg-white"
+                    class="tw-bg-white dark:tw-bg-[#1b1e24]"
                     @click="() => showDeleteAvailabilityDialog(user)"
-                    ><v-icon small class="hover:tw-text-red" color="#4F4F4F"
+                    ><v-icon
+                      small
+                      class="hover:tw-text-red tw-text-gray-500 dark:tw-text-gray-200"
                       >mdi-delete</v-icon
                     ></v-btn
                   >

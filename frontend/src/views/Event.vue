@@ -251,32 +251,7 @@
         <div
           class="tw-mx-4 tw-mt-4 tw-rounded-md tw-border tw-border-light-gray-stroke tw-bg-white dark:tw-bg-[#1b1e24] tw-px-6 tw-py-4"
         >
-          <div class="tw-mb-2 tw-text-sm tw-font-medium tw-text-dark-green dark:tw-text-white">
-            Theme
-          </div>
-          <v-menu offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                class="tw-text-black dark:tw-text-white"
-                outlined
-                v-bind="attrs"
-                v-on="on"
-              >
-                Theme: {{ themeLabel }}
-              </v-btn>
-            </template>
-            <v-list dense class="dark:tw-bg-[#1b1e24]">
-              <v-list-item @click="setTheme('system')">
-                <v-list-item-title>System</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="setTheme('light')">
-                <v-list-item-title>Light</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="setTheme('dark')">
-                <v-list-item-title>Dark</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <ThemeSelector :themePreference.sync="themePreference" />
         </div>
 
         <!-- Calendar -->
@@ -444,6 +419,7 @@ import InvitationDialog from "@/components/groups/InvitationDialog.vue"
 import HelpDialog from "@/components/HelpDialog.vue"
 import EventDescription from "@/components/event/EventDescription.vue"
 import FormerlyKnownAs from "@/components/FormerlyKnownAs.vue"
+import ThemeSelector from "@/components/ThemeSelector.vue"
 export default {
   name: "Event",
 
@@ -467,6 +443,7 @@ export default {
     HelpDialog,
     EventDescription,
     FormerlyKnownAs,
+    ThemeSelector,
   },
 
   data: () => ({
@@ -528,11 +505,6 @@ export default {
     },
     version() {
       return process.env.VUE_APP_COMMIT || "unknown"
-    },
-    themeLabel() {
-      if (this.themePreference === "dark") return "Dark"
-      if (this.themePreference === "light") return "Light"
-      return "System"
     },
     calendarTypes() {
       return calendarTypes
@@ -615,10 +587,6 @@ export default {
     ...mapActions(["showError", "showInfo", "getEvents"]),
     ...mapMutations(["setAuthUser"]),
     applyThemePreference() {
-      setThemePreference(this.themePreference, this.$vuetify)
-    },
-    setTheme(value) {
-      this.themePreference = value
       setThemePreference(this.themePreference, this.$vuetify)
     },
     /** Show choice dialog if not signed in, otherwise, immediately start editing availability */

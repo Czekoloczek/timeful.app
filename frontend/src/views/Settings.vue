@@ -153,30 +153,10 @@
           <div class="tw-text-black dark:tw-text-white">
             Toggle dark mode manually or let it sync with your system.
           </div>
-          <div class="tw-flex tw-items-center tw-gap-4">
-            <v-menu offset-y>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  class="tw-text-black dark:tw-text-white"
-                  outlined
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  Theme: {{ themeLabel }}
-                </v-btn>
-              </template>
-              <v-list dense class="dark:tw-bg-[#1b1e24]">
-                <v-list-item @click="setTheme('system')">
-                  <v-list-item-title>System</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="setTheme('light')">
-                  <v-list-item-title>Light</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="setTheme('dark')">
-                  <v-list-item-title>Dark</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+          <div
+            class="tw-rounded-md tw-border tw-border-light-gray-stroke tw-bg-white dark:tw-bg-[#1b1e24] tw-px-6 tw-py-4"
+          >
+            <ThemeSelector :themePreference.sync="themePreference" />
           </div>
         </div>
       </div>
@@ -230,6 +210,7 @@
 import { mapState, mapActions } from "vuex"
 import { _delete, patch, isPhone, get, setThemePreference } from "@/utils"
 import CalendarAccounts from "@/components/settings/CalendarAccounts.vue"
+import ThemeSelector from "@/components/ThemeSelector.vue"
 
 export default {
   name: "Settings",
@@ -238,7 +219,7 @@ export default {
     title: "Settings - Timeful",
   },
 
-  components: { CalendarAccounts },
+  components: { CalendarAccounts, ThemeSelector },
 
   data: () => ({
     dialog: false,
@@ -278,20 +259,12 @@ export default {
     isPhone() {
       return isPhone(this.$vuetify)
     },
-    themeLabel() {
-      if (this.themePreference === "dark") return "Dark"
-      if (this.themePreference === "light") return "Light"
-      return "System"
-    },
   },
 
   methods: {
     ...mapActions(["showError"]),
     applyThemePreference() {
       setThemePreference(this.themePreference, this.$vuetify)
-    },
-    setTheme(value) {
-      this.themePreference = value
     },
     openBillingPortal() {
       get(
