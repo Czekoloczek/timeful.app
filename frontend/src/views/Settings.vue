@@ -321,11 +321,6 @@ export default {
     }
     this.applyThemePreference()
   },
-  mounted() {
-    if (!this.authUser) {
-      this.$router.replace({ name: "home" })
-    }
-  },
   watch: {
     themePreference() {
       this.applyThemePreference()
