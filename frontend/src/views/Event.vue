@@ -248,11 +248,6 @@
           />
         </div>
 
-        <div
-          class="tw-mx-4 tw-mt-4 tw-rounded-md tw-border tw-border-light-gray-stroke tw-bg-white dark:tw-bg-[#1b1e24] tw-px-6 tw-py-4"
-        >
-          <ThemeSelector :themePreference.sync="themePreference" />
-        </div>
 
         <!-- Calendar -->
 
@@ -419,7 +414,6 @@ import InvitationDialog from "@/components/groups/InvitationDialog.vue"
 import HelpDialog from "@/components/HelpDialog.vue"
 import EventDescription from "@/components/event/EventDescription.vue"
 import FormerlyKnownAs from "@/components/FormerlyKnownAs.vue"
-import ThemeSelector from "@/components/ThemeSelector.vue"
 export default {
   name: "Event",
 
@@ -443,7 +437,6 @@ export default {
     HelpDialog,
     EventDescription,
     FormerlyKnownAs,
-    ThemeSelector,
   },
 
   data: () => ({
@@ -491,11 +484,6 @@ export default {
     }
 
     this.applyThemePreference()
-  },
-  watch: {
-    themePreference() {
-      this.applyThemePreference()
-    },
   },
 
   computed: {
@@ -587,6 +575,8 @@ export default {
     ...mapActions(["showError", "showInfo", "getEvents"]),
     ...mapMutations(["setAuthUser"]),
     applyThemePreference() {
+      const themePreference = localStorage.getItem("themePreference") || "system"
+      this.themePreference = themePreference
       setThemePreference(this.themePreference, this.$vuetify)
     },
     /** Show choice dialog if not signed in, otherwise, immediately start editing availability */

@@ -58,12 +58,6 @@
         ></div>
       </div>
 
-      <div
-        class="tw-mx-auto tw-max-w-6xl tw-rounded-md tw-border tw-border-light-gray-stroke tw-bg-white dark:tw-bg-[#1b1e24] tw-px-6 tw-py-4 sm:tw-mx-4"
-      >
-        <ThemeSelector :themePreference.sync="themePreference" />
-      </div>
-
       <div class="tw-flex tw-flex-col tw-items-center tw-justify-between">
         <router-link
           class="tw-text-xs tw-font-medium tw-text-gray"
@@ -99,9 +93,8 @@ import When2meetImportDialog from "@/components/When2meetImportDialog.vue"
 import Dashboard from "@/components/home/Dashboard.vue"
 import { mapState, mapActions, mapMutations } from "vuex"
 import { eventTypes } from "@/constants"
-import { isPhone, get, setThemePreference } from "@/utils"
+import { isPhone, get } from "@/utils"
 import FormerlyKnownAs from "@/components/FormerlyKnownAs.vue"
-import ThemeSelector from "@/components/ThemeSelector.vue"
 
 export default {
   name: "Home",
@@ -117,7 +110,6 @@ export default {
     When2meetImportDialog,
     Dashboard,
     FormerlyKnownAs,
-    ThemeSelector,
   },
 
   props: {
@@ -142,6 +134,7 @@ export default {
       openNewGroup: this.openNewGroup,
       eventOnly: false,
     })
+    this.applyThemePreference()
   },
 
   computed: {
@@ -161,6 +154,8 @@ export default {
     ...mapMutations(["setAuthUser", "setNewDialogOptions"]),
     ...mapActions(["getEvents", "createNew"]),
     applyThemePreference() {
+      const themePreference = localStorage.getItem("themePreference") || "system"
+      this.themePreference = themePreference
       setThemePreference(this.themePreference, this.$vuetify)
     },
     userRespondedToEvent(event) {
@@ -175,12 +170,6 @@ export default {
       this.$posthog?.capture("convert_when2meet_to_timeful_clicked")
     },
   },
-  watch: {
-    themePreference() {
-      this.applyThemePreference()
-    },
-  },
-
   created() {
     this.getEvents().then(() => {
       this.loading = false
@@ -188,11 +177,9 @@ export default {
     get("/user/profile")
       .then((authUser) => {
         this.setAuthUser(authUser)
-        this.applyThemePreference()
       })
       .catch(() => {
         this.setAuthUser(null)
-        this.applyThemePreference()
       })
   },
 }

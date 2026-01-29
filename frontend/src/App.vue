@@ -496,6 +496,8 @@ export default {
       this.scrollY = window.scrollY
     },
     applyThemePreference() {
+      const themePreference = localStorage.getItem("themePreference") || "system"
+      this.themePreference = themePreference
       setThemePreference(this.themePreference, this.$vuetify)
     },
     _createNew(eventOnly = false) {
