@@ -93,7 +93,7 @@ import When2meetImportDialog from "@/components/When2meetImportDialog.vue"
 import Dashboard from "@/components/home/Dashboard.vue"
 import { mapState, mapActions, mapMutations } from "vuex"
 import { eventTypes } from "@/constants"
-import { isPhone, get } from "@/utils"
+import { isPhone, get, setThemePreference } from "@/utils"
 import FormerlyKnownAs from "@/components/FormerlyKnownAs.vue"
 
 export default {
@@ -154,8 +154,6 @@ export default {
     ...mapMutations(["setAuthUser", "setNewDialogOptions"]),
     ...mapActions(["getEvents", "createNew"]),
     applyThemePreference() {
-      const themePreference = localStorage.getItem("themePreference") || "system"
-      this.themePreference = themePreference
       setThemePreference(this.themePreference, this.$vuetify)
     },
     userRespondedToEvent(event) {

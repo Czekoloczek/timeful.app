@@ -575,8 +575,6 @@ export default {
     ...mapActions(["showError", "showInfo", "getEvents"]),
     ...mapMutations(["setAuthUser"]),
     applyThemePreference() {
-      const themePreference = localStorage.getItem("themePreference") || "system"
-      this.themePreference = themePreference
       setThemePreference(this.themePreference, this.$vuetify)
     },
     /** Show choice dialog if not signed in, otherwise, immediately start editing availability */
