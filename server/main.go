@@ -118,7 +118,9 @@ func main() {
 	routes.InitFolders(apiRouter)
 	slackbot.InitSlackbot(apiRouter)
 
-	err = filepath.WalkDir("../frontend/dist", func(path string, d fs.DirEntry, err error) error {
+	// Get frontend path
+	frontendPath := "../frontend/dist"
+	err = filepath.WalkDir(frontendPath, func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() && d.Name() != "index.html" {
 			split := splitPath(path)
 			newPath := filepath.Join(split[3:]...)
@@ -130,14 +132,18 @@ func main() {
 		log.Fatalf("failed to walk directories: %s", err)
 	}
 
-	router.LoadHTMLFiles("../frontend/dist/index.html")
+	router.LoadHTMLFiles(filepath.Join(frontendPath, "index.html"))
 	router.NoRoute(noRouteHandler())
 
 	// Init swagger documentation
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// Run server
-	router.Run(":3002")
+	if os.Getenv("NODE_ENV") == "staging" {
+		router.Run(":3003")
+	} else {
+		router.Run(":3002")
+	}
 }
 
 // Load .env variables
