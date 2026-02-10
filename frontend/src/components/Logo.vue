@@ -36,6 +36,9 @@ export default {
     src() {
       switch (this.type) {
         case "timeful":
+          if (this.$vuetify.theme.dark) {
+            return require("@/assets/timeful_logo_with_text_white_bg.png")
+          }
           return require("@/assets/timeful_logo_with_text.png")
         case "betterwhen2meet":
           return require("@/assets/april_fools_logo.png")

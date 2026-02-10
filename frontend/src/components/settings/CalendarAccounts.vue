@@ -1,7 +1,7 @@
 <template>
   <div
     :class="toggleState ? '' : 'tw-w-fit tw-min-w-[288px] tw-drop-shadow'"
-    class="tw-flex tw-flex-col tw-rounded-lg tw-bg-white tw-text-black tw-transition-all"
+    class="tw-flex tw-flex-col tw-rounded-lg tw-bg-white dark:tw-bg-[#1b1e24] tw-text-black dark:tw-text-white tw-transition-all"
   >
     <v-btn
       v-if="toggleState"
@@ -10,14 +10,14 @@
       text
       @click="toggleShowCalendars"
     >
-      <span class="tw-mr-1 tw-text-base tw-font-medium">My calendars</span>
+      <span class="tw-mr-1 tw-text-base tw-font-medium dark:tw-text-white">My calendars</span>
       <v-icon :class="`tw-rotate-${showCalendars ? '180' : '0'}`"
         >mdi-chevron-down</v-icon
       ></v-btn
     >
     <div
       v-else
-      class="tw-border-b tw-border-off-white tw-px-4 tw-py-3 tw-font-medium"
+      class="tw-border-b tw-border-off-white tw-px-4 tw-py-3 tw-font-medium dark:tw-text-white"
     >
       My calendars
     </div>

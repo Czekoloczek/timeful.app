@@ -48,6 +48,7 @@ module.exports = {
     },
   },
   plugins: [],
+  darkMode: ["class", ".theme--dark"],
   prefix: "tw-",
   safelist: [],
 }

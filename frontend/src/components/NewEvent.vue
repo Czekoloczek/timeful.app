@@ -673,8 +673,7 @@ export default {
         type = eventTypes.SPECIFIC_DATES
 
         for (const day of this.selectedDays) {
-          const date = new Date(`${day} 00:00:00Z`)
-          dates.push(date)
+          dates.push(new Date(`${day}T00:00:00`))
         }
 
         this.specificTimesEnabled = false
@@ -895,10 +894,10 @@ export default {
         if (this.event.daysOnly) {
           this.selectedDateOption = this.dateOptions.SPECIFIC
           const selectedDays = []
-          for (let date of this.event.dates) {
-            selectedDays.push(getISODateString(date, true))
-          }
-          this.selectedDays = selectedDays
+            for (let date of this.event.dates) {
+              selectedDays.push(getISODateString(date))
+            }
+            this.selectedDays = selectedDays
         } else {
           if (this.event.type === eventTypes.SPECIFIC_DATES) {
             this.selectedDateOption = this.dateOptions.SPECIFIC

@@ -70,6 +70,52 @@ export const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent)
 }
 
+export const setThemePreference = (preference, vuetify) => {
+  if (!vuetify) return
+
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+  const applyTheme = (isDark) => {
+    vuetify.theme.dark = isDark
+    document.documentElement.classList.toggle("theme--dark", isDark)
+  }
+
+  const listenerStore = window.__themeListener
+  if (listenerStore?.mediaQuery && listenerStore?.listener) {
+    if (listenerStore.mediaQuery.removeEventListener) {
+      listenerStore.mediaQuery.removeEventListener(
+        "change",
+        listenerStore.listener
+      )
+    } else if (listenerStore.mediaQuery.removeListener) {
+      listenerStore.mediaQuery.removeListener(listenerStore.listener)
+    }
+  }
+
+  const selectedPreference = preference || "system"
+  localStorage.setItem("themePreference", selectedPreference)
+
+  if (selectedPreference === "light") {
+    applyTheme(false)
+    return
+  }
+  if (selectedPreference === "dark") {
+    applyTheme(true)
+    return
+  }
+
+  const listener = (event) => {
+    applyTheme(event.matches)
+  }
+  applyTheme(mediaQuery.matches)
+  if (mediaQuery.addEventListener) {
+    mediaQuery.addEventListener("change", listener)
+  } else if (mediaQuery.addListener) {
+    mediaQuery.addListener(listener)
+  }
+
+  window.__themeListener = { mediaQuery, listener }
+}
+
 export const br = (vuetify, breakpoint) => {
   return vuetify.breakpoint.name === breakpoint
 }

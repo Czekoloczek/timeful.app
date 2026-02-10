@@ -30,9 +30,38 @@ Vue.use(VueWorker)
 
 Vue.config.productionTip = false
 
-new Vue({
+const app = new Vue({
   router,
   store,
   vuetify,
   render: (h) => h(App),
-}).$mount("#app")
+})
+
+export const syncVuetifyTheme = (manualPreference = null, vuetifyApp = app) => {
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+  const applyTheme = (isDark) => {
+    vuetifyApp.$vuetify.theme.dark = isDark
+    document.documentElement.classList.toggle("theme--dark", isDark)
+  }
+  const updateTheme = (event) => {
+    applyTheme(event.matches)
+  }
+  if (manualPreference === "light") {
+    applyTheme(false)
+    return
+  }
+  if (manualPreference === "dark") {
+    applyTheme(true)
+    return
+  }
+  applyTheme(mediaQuery.matches)
+  if (mediaQuery.addEventListener) {
+    mediaQuery.addEventListener("change", updateTheme)
+  } else if (mediaQuery.addListener) {
+    mediaQuery.addListener(updateTheme)
+  }
+}
+
+const storedTheme = localStorage.getItem("themePreference")
+syncVuetifyTheme(storedTheme, app)
+app.$mount("#app")

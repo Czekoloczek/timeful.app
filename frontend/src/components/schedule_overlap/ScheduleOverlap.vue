@@ -3061,7 +3061,7 @@ export default {
       ) {
         // Dashed border for currently selected timeslot
         classStyle.class +=
-          "tw-border tw-border-dashed tw-border-black tw-z-10 "
+          "tw-border tw-border-dashed tw-border-black dark:tw-border-white tw-z-10 "
       } else {
         // Normal border
         if (date) {
@@ -3079,20 +3079,20 @@ export default {
 
         classStyle.class += "tw-border-r "
         if (col === 0 || !this.isColConsecutive(col))
-          classStyle.class += "tw-border-l tw-border-l-gray "
+          classStyle.class += "tw-border-l tw-border-l-gray dark:tw-border-l-[#4b5563] "
         if (col === this.days.length - 1 || !this.isColConsecutive(col + 1))
-          classStyle.class += "tw-border-r-gray "
+          classStyle.class += "tw-border-r-gray dark:tw-border-r-[#4b5563] "
         if (isFirstSplit && row === 0)
-          classStyle.class += "tw-border-t tw-border-t-gray "
+          classStyle.class += "tw-border-t tw-border-t-gray dark:tw-border-t-[#4b5563] "
         if (!isFirstSplit && row === this.splitTimes[0].length)
-          classStyle.class += "tw-border-t tw-border-t-gray "
+          classStyle.class += "tw-border-t tw-border-t-gray dark:tw-border-t-[#4b5563] "
         if (isFirstSplit && row === this.splitTimes[0].length - 1)
-          classStyle.class += "tw-border-b tw-border-b-gray "
+          classStyle.class += "tw-border-b tw-border-b-gray dark:tw-border-b-[#4b5563] "
         if (
           !isFirstSplit &&
           row === this.splitTimes[0].length + this.splitTimes[1].length - 1
         )
-          classStyle.class += "tw-border-b tw-border-b-gray "
+          classStyle.class += "tw-border-b tw-border-b-gray dark:tw-border-b-[#4b5563] "
 
         const totalRespondents =
           this.state === this.states.SUBSET_AVAILABILITY
@@ -3103,16 +3103,16 @@ export default {
           this.state === this.states.SINGLE_AVAILABILITY ||
           totalRespondents === 1
         ) {
-          classStyle.class += "tw-border-[#999999] "
+          classStyle.class += "tw-border-[#999999] dark:tw-border-[#4b5563] "
         } else {
-          classStyle.class += "tw-border-[#DDDDDD99] "
+          classStyle.class += "tw-border-[#DDDDDD99] dark:tw-border-[#4b5563] "
         }
       }
 
       // Edit fill color and border color if day is not interactable
       if (isDisabled) {
         classStyle.class +=
-          "tw-bg-light-gray-stroke tw-border-light-gray-stroke "
+          "tw-bg-light-gray-stroke dark:tw-bg-[#1a1d22] tw-border-light-gray-stroke dark:tw-border-[#2d3139] "
       }
 
       // Change default red:
@@ -3135,10 +3135,10 @@ export default {
 
       // Fill style
 
-      if (this.isSignUp) {
-        c += "tw-bg-light-gray "
-        return { class: c, style: s }
-      }
+        if (this.isSignUp) {
+          c += "tw-bg-light-gray dark:tw-bg-[#1a1d22] "
+          return { class: c, style: s }
+        }
 
       if (
         (!this.overlayAvailability &&
@@ -3161,11 +3161,13 @@ export default {
               } else if (
                 this.availabilityType === availabilityTypes.IF_NEEDED
               ) {
-                c += "tw-bg-yellow "
+                c += "tw-bg-yellow dark:tw-bg-[#99770066] "
               } else if (
                 this.availabilityType === availabilityTypes.NOT_SURE
               ) {
-                s.backgroundColor = "#3b82f666"
+                s.backgroundColor = this.$vuetify?.theme?.dark
+                  ? "#3b82f6d9"
+                  : "#3b82f666"
               }
             }
           } else if (this.dragType === this.DRAG_TYPES.REMOVE) {
@@ -3186,9 +3188,11 @@ export default {
             if (this.availability.has(date.getTime())) {
               s.backgroundColor = "#00994C77"
             } else if (this.ifNeeded.has(date.getTime())) {
-              c += "tw-bg-yellow "
+              c += "tw-bg-yellow dark:tw-bg-[#99770066] "
             } else if (this.notSure.has(date.getTime())) {
-              s.backgroundColor = "#3b82f666"
+              s.backgroundColor = this.$vuetify?.theme?.dark
+                ? "#3b82f6d9"
+                : "#3b82f666"
             }
           }
         }
@@ -3199,11 +3203,14 @@ export default {
         const respondent = this.curRespondent
         if (timeslotRespondents.has(respondent)) {
           if (this.parsedResponses[respondent]?.ifNeeded?.has(date.getTime())) {
-            c += "tw-bg-yellow "
+            c +=
+              "tw-bg-yellow dark:tw-bg-[#99770066] "
           } else if (
             this.parsedResponses[respondent]?.notSure?.has(date.getTime())
           ) {
-            s.backgroundColor = "#3b82f666"
+            s.backgroundColor = this.$vuetify?.theme?.dark
+              ? "#3b82f6d9"
+              : "#3b82f666"
           } else {
             s.backgroundColor = "#00994C77"
           }
@@ -3251,7 +3258,7 @@ export default {
         ) {
           numRespondents = totalVisible
           max = this.max
-        } else if (this.state === this.states.SUBSET_AVAILABILITY) {
+  } else if (this.state === this.states.SUBSET_AVAILABILITY) {
           numRespondents = [...timeslotRespondents]
             .filter((r) => this.curRespondentsSet.has(r))
             .length
@@ -3279,11 +3286,11 @@ export default {
         if (this.defaultState === this.states.BEST_TIMES) {
           if (max > 0 && numRespondents === max) {
             const base =
-              availableCount > 0
-                ? colors.available
+              visibleNotSure > 0
+                ? colors.notSure
                 : visibleIfNeeded > 0
                 ? colors.ifNeeded
-                : colors.notSure
+                : colors.available
             if (totalRespondents === 1 || this.overlayAvailability) {
               s.backgroundColor = colorWithAlpha(base, 0.53)
             } else {
@@ -3298,15 +3305,17 @@ export default {
                   ? this.curRespondents[0]
                   : this.respondents[0]._id
               if (
+                this.parsedResponses[respondentId]?.notSure?.has(date.getTime())
+              ) {
+                s.backgroundColor = this.$vuetify?.theme?.dark
+                  ? "#3b82f6d9"
+                  : "#3b82f666"
+              } else if (
                 this.parsedResponses[respondentId]?.ifNeeded?.has(
                   date.getTime()
                 )
               ) {
-                c += "tw-bg-yellow "
-              } else if (
-                this.parsedResponses[respondentId]?.notSure?.has(date.getTime())
-              ) {
-                s.backgroundColor = "#3b82f666"
+                c += "tw-bg-yellow dark:tw-bg-[#99770066] "
               } else {
                 const green = "#00994C88"
                 s.backgroundColor = green
@@ -3339,11 +3348,11 @@ export default {
               }
 
               const base =
-                availableCount > 0
-                  ? colors.available
+                visibleNotSure > 0
+                  ? colors.notSure
                   : visibleIfNeeded > 0
                   ? colors.ifNeeded
-                  : colors.notSure
+                  : colors.available
               s.backgroundColor = `${base}${alpha}`
             }
           } else if (totalRespondents === 1) {
@@ -3376,7 +3385,8 @@ export default {
         }
       } else {
         classStyle = {
-          class: "tw-bg-off-white tw-text-gray ",
+          class:
+            "tw-bg-off-white dark:tw-bg-[#1a1d22] tw-text-gray dark:tw-text-gray-300 ",
           style: {},
         }
       }
@@ -3401,17 +3411,19 @@ export default {
       ) {
         // Dashed border for currently selected timeslot
         classStyle.class +=
-          "tw-outline-2 tw-outline-dashed tw-outline-black tw-z-10 "
+          "tw-outline-2 tw-outline-dashed tw-outline-black dark:tw-outline-white tw-z-10 "
       } else {
         // Normal border
-        if (col === 0) classStyle.class += "tw-border-l tw-border-l-gray "
-        classStyle.class += "tw-border-r tw-border-r-gray "
+        if (col === 0)
+          classStyle.class += "tw-border-l tw-border-l-gray dark:tw-border-l-[#4b5563] "
+        classStyle.class += "tw-border-r tw-border-r-gray dark:tw-border-r-[#4b5563] "
         if (col !== 7 - 1) {
           classStyle.style.borderRightStyle = "dashed"
         }
 
-        if (row === 0) classStyle.class += "tw-border-t tw-border-t-gray "
-        classStyle.class += "tw-border-b tw-border-b-gray "
+        if (row === 0)
+          classStyle.class += "tw-border-t tw-border-t-gray dark:tw-border-t-[#4b5563] "
+        classStyle.class += "tw-border-b tw-border-b-gray dark:tw-border-b-[#4b5563] "
         if (row !== Math.floor(this.monthDays.length / 7)) {
           classStyle.style.borderBottomStyle = "dashed"
         }

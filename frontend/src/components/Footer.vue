@@ -77,6 +77,7 @@
             <router-link :to="{ name: 'cookie-settings' }" class="tw-text-sm">
               Cookie Preferences
             </router-link>
+            <div class="tw-text-xs tw-text-white/70">Version {{ version }}</div>
           </div>
         </div>
         <!-- Links -->
@@ -100,7 +101,7 @@
                 <div class="tw-text-sm">
                   Email support at
                   <span class="tw-text-green tw-underline"
-                    >contact@timeful.app</span
+                    >timeful@pierdolnik.xyz</span
                   >
                 </div>
               </v-card>
@@ -196,6 +197,9 @@ export default {
         "..." +
         this.contractAddress.slice(-4)
       )
+    },
+    version() {
+      return process.env.VUE_APP_COMMIT || "unknown"
     },
   },
   methods: {

@@ -537,8 +537,7 @@ export default {
         type = eventTypes.SIGNUP
 
         for (const day of this.selectedDays) {
-          const date = new Date(`${day} 00:00:00Z`)
-          dates.push(date)
+          dates.push(new Date(`${day}T00:00:00`))
         }
       } else {
         const startTimeString = timeNumToTimeString(this.startTime)
@@ -729,7 +728,7 @@ export default {
           this.selectedDateOption = this.dateOptions.SPECIFIC
           const selectedDays = []
           for (let date of this.event.dates) {
-            selectedDays.push(getISODateString(date, true))
+            selectedDays.push(getISODateString(date))
           }
           this.selectedDays = selectedDays
         } else {
@@ -739,7 +738,7 @@ export default {
             for (let date of this.event.dates) {
               date = getDateWithTimezone(date)
 
-              selectedDays.push(getISODateString(date, true))
+              selectedDays.push(getISODateString(date))
             }
             this.selectedDays = selectedDays
           } else if (this.event.type === eventTypes.DOW) {

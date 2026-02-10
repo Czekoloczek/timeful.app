@@ -14,9 +14,13 @@ dayjs.extend(timezonePlugin)
 export const getDateString = (date, utc = false) => {
   date = new Date(date)
   if (utc) {
-    return `${date.getUTCMonth() + 1}/${date.getUTCDate()}`
+    return `${String(date.getUTCDate()).padStart(2, "0")}.${String(
+      date.getUTCMonth() + 1
+    ).padStart(2, "0")}`
   }
-  return `${date.getMonth() + 1}/${date.getDate()}`
+  return `${String(date.getDate()).padStart(2, "0")}.${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}`
 }
 
 /** Returns a string in the format "Mon, 9/23, 10 AM - 12 PM PDT" given a start date and end date */
@@ -51,12 +55,19 @@ export const getISODateString = (date, utc = false) => {
 }
 
 /** Returns a string representing date range from date1 to date2, i.e. "5/14 - 5/27" */
+const DAY_MS = 24 * 60 * 60 * 1000
+
 export const getDateRangeString = (date1, date2, utc = false) => {
   date1 = new Date(date1)
   date2 = new Date(date2)
+  const date2AtMidnight = utc
+    ? date2.getUTCHours() === 0 && date2.getUTCMinutes() === 0
+    : date2.getHours() === 0 && date2.getMinutes() === 0
+  const daySpan = Math.round((date2.getTime() - date1.getTime()) / DAY_MS)
+  const usesExclusiveEnd = date2AtMidnight && daySpan >= 1
 
-  // Correct date2 if time is 12am (because ending at 12am doesn't begin the next day)
-  if ((utc && date2.getUTCHours() == 0) || (!utc && date2.getHours() == 0)) {
+  // Correct date2 if time is 12am and end is exclusive
+  if (usesExclusiveEnd) {
     date2 = getDateDayOffset(date2, -1)
   }
 
@@ -81,17 +92,17 @@ export const getDateRangeStringForEvent = (event) => {
     s = s.substring(0, s.length - 2)
     return s
   } else if (event.daysOnly) {
-    return (
-      getDateString(event.dates[0], true) +
-      " - " +
-      getDateString(event.dates[event.dates.length - 1], true)
+    const startDate = getDateWithTimezone(new Date(event.dates[0]))
+    const endDate = getDateWithTimezone(
+      new Date(event.dates[event.dates.length - 1])
     )
+    return `${getDateString(startDate)} - ${getDateString(endDate)}`
   } else if (event.type === eventTypes.SPECIFIC_DATES) {
     const startDate = getDateWithTimezone(new Date(event.dates[0]))
     const endDate = getDateWithTimezone(
       new Date(event.dates[event.dates.length - 1])
     )
-    return getDateRangeString(startDate, endDate, true)
+    return getDateRangeString(startDate, endDate)
   }
 
   return ""
