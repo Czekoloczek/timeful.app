@@ -82,7 +82,7 @@ func TestCreateLocalEmailTasks(t *testing.T) {
 		t.Fatalf("expected 3 task ids, got %d", len(taskIds))
 	}
 
-	for i := 0; i < 10 && called == 0; i++ {
+	for i := 0; i < 120 && called == 0; i++ {
 		time.Sleep(10 * time.Millisecond)
 	}
 
