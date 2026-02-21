@@ -255,7 +255,7 @@
                     v-if="isGuest(user)"
                     small
                     icon
-                    class="tw-bg-white dark:tw-bg-[#1b1e24]"
+                    class="tw-bg-white dark:tw-bg-[#1b1e24] dark:hover:tw-bg-[#2d3139]"
                     @click="$emit('editGuestAvailability', user._id)"
                     ><v-icon
                       small
@@ -267,7 +267,7 @@
                     v-if="isOwner && !isGroup"
                     small
                     icon
-                    class="tw-bg-white dark:tw-bg-[#1b1e24]"
+                    class="tw-bg-white dark:tw-bg-[#1b1e24] dark:hover:tw-bg-[#2d3139]"
                     @click="() => showDeleteAvailabilityDialog(user)"
                     ><v-icon
                       small
@@ -662,13 +662,13 @@ export default {
       if (this.curRespondentsSet.has(id) && (isIfNeeded || isNotSure)) {
         c.push(
           isNotSure
-            ? "tw-bg-blue/30 dark:tw-bg-blue/60"
-            : "tw-bg-yellow dark:tw-bg-[#99770066]"
+            ? "tw-bg-blue/40 dark:tw-bg-blue/70"
+            : "tw-bg-yellow dark:tw-bg-[#9977004d]"
         )
       } else if (this.curRespondents.length === 0 && isNotSure) {
-        c.push("tw-bg-blue/15 dark:tw-bg-blue/45")
+        c.push("tw-bg-blue/20 dark:tw-bg-blue/55")
       } else if (this.curRespondents.length === 0 && isIfNeeded) {
-        c.push("tw-bg-yellow dark:tw-bg-[#99770066]")
+        c.push("tw-bg-yellow dark:tw-bg-[#9977004d]")
       }
 
       if (this.$vuetify?.theme?.dark && (isIfNeeded || isNotSure)) {

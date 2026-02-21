@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-rounded-md tw-px-6 tw-py-4 sm:tw-mx-4 sm:tw-bg-[#f3f3f366] dark:sm:tw-bg-[#111318]">
+  <div class="tw-rounded-md tw-px-6 tw-py-4 sm:tw-mx-4 sm:tw-bg-[#f3f3f366] dark:tw-bg-[#111318]">
     <div class="tw-mb-3 tw-flex tw-items-center tw-justify-between">
       <div class="tw-flex tw-flex-col">
         <div
@@ -23,14 +23,16 @@
           </div>
         </div>
       </div>
-      <v-btn
-        text
-        @click="openCreateFolderDialog"
-        class="tw-text-very-dark-gray"
-      >
-        <v-icon class="tw-text-lg">mdi-folder-plus</v-icon>
-        <span class="tw-ml-2">New folder</span>
-      </v-btn>
+        <v-btn
+          text
+          @click="openCreateFolderDialog"
+          class="tw-text-very-dark-gray dark:tw-text-gray-200"
+        >
+          <v-icon class="tw-text-lg dark:tw-text-gray-200"
+            >mdi-folder-plus</v-icon
+          >
+          <span class="tw-ml-2">New folder</span>
+        </v-btn>
     </div>
 
     <div>
@@ -64,12 +66,16 @@
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon small v-bind="attrs" v-on="on" @click.stop.prevent>
-                  <v-icon small>mdi-dots-horizontal</v-icon>
+                  <v-icon small class="dark:tw-text-gray-200"
+                    >mdi-dots-horizontal</v-icon
+                  >
                 </v-btn>
               </template>
-              <v-list dense class="tw-py-1">
+              <v-list dense class="tw-py-1 dark:tw-bg-[#1b1e24]">
                 <v-list-item @click.stop.prevent="openEditFolderDialog(folder)">
-                  <v-list-item-title>Edit</v-list-item-title>
+                  <v-list-item-title class="dark:tw-text-white"
+                    >Edit</v-list-item-title
+                  >
                 </v-list-item>
                 <v-list-item @click.stop.prevent="openDeleteDialog(folder)">
                   <v-list-item-title class="tw-text-red"

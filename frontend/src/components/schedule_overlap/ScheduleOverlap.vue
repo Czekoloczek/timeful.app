@@ -1229,11 +1229,11 @@ export default {
     /** Returns the days of the week in the correct order */
     daysOfWeek() {
       if (!this.event.daysOnly) {
-        return ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
+        return ["Niedz.", "Pon.", "Wt.", "Śr.", "Czw.", "Pt.", "Sob."]
       }
       return !this.startCalendarOnMonday
-        ? ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
-        : ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+        ? ["Niedz.", "Pon.", "Wt.", "Śr.", "Czw.", "Pt.", "Sob."]
+        : ["Pon.", "Wt.", "Śr.", "Czw.", "Pt.", "Sob.", "Niedz."]
     },
     /** Only allow scheduling when a curScheduledEvent exists */
     allowScheduleEvent() {
@@ -3161,12 +3161,12 @@ export default {
               } else if (
                 this.availabilityType === availabilityTypes.IF_NEEDED
               ) {
-                c += "tw-bg-yellow dark:tw-bg-[#99770066] "
+                c += "tw-bg-yellow dark:tw-bg-[#9977004d] "
               } else if (
                 this.availabilityType === availabilityTypes.NOT_SURE
               ) {
                 s.backgroundColor = this.$vuetify?.theme?.dark
-                  ? "#3b82f6d9"
+                  ? "#3b82f6f0"
                   : "#3b82f666"
               }
             }
@@ -3188,10 +3188,10 @@ export default {
             if (this.availability.has(date.getTime())) {
               s.backgroundColor = "#00994C77"
             } else if (this.ifNeeded.has(date.getTime())) {
-              c += "tw-bg-yellow dark:tw-bg-[#99770066] "
+              c += "tw-bg-yellow dark:tw-bg-[#9977004d] "
             } else if (this.notSure.has(date.getTime())) {
               s.backgroundColor = this.$vuetify?.theme?.dark
-                ? "#3b82f6d9"
+                ? "#3b82f6f0"
                 : "#3b82f666"
             }
           }
@@ -3204,12 +3204,12 @@ export default {
         if (timeslotRespondents.has(respondent)) {
           if (this.parsedResponses[respondent]?.ifNeeded?.has(date.getTime())) {
             c +=
-              "tw-bg-yellow dark:tw-bg-[#99770066] "
+              "tw-bg-yellow dark:tw-bg-[#9977004d] "
           } else if (
             this.parsedResponses[respondent]?.notSure?.has(date.getTime())
           ) {
             s.backgroundColor = this.$vuetify?.theme?.dark
-              ? "#3b82f6d9"
+              ? "#3b82f6f0"
               : "#3b82f666"
           } else {
             s.backgroundColor = "#00994C77"
@@ -3308,14 +3308,14 @@ export default {
                 this.parsedResponses[respondentId]?.notSure?.has(date.getTime())
               ) {
                 s.backgroundColor = this.$vuetify?.theme?.dark
-                  ? "#3b82f6d9"
+                  ? "#3b82f6f0"
                   : "#3b82f666"
               } else if (
                 this.parsedResponses[respondentId]?.ifNeeded?.has(
                   date.getTime()
                 )
               ) {
-                c += "tw-bg-yellow dark:tw-bg-[#99770066] "
+                c += "tw-bg-yellow dark:tw-bg-[#9977004d] "
               } else {
                 const green = "#00994C88"
                 s.backgroundColor = green

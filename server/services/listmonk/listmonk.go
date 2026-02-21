@@ -7,15 +7,17 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"schej.it/server/logger"
+	"schej.it/server/utils"
 )
 
 // Adds the given user to the Listmonk contact list
 // If subscriberId is not nil, then UPDATE the user instead of adding user
 func AddUserToListmonk(email string, firstName string, lastName string, picture string, subscriberId *int, sendMarketingEmails bool) {
-	if os.Getenv("LISTMONK_ENABLED") == "false" {
+	if os.Getenv("LISTMONK_ENABLED") != "true" {
 		return
 	}
 
@@ -70,7 +72,7 @@ func AddUserToListmonk(email string, firstName string, lastName string, picture 
 // Check if the user is already in listmonk
 // Returns a bool representing whether the subscriber exists and the id of the subscriber if it does exist
 func DoesUserExist(email string) (bool, *int) {
-	if os.Getenv("LISTMONK_ENABLED") == "false" {
+	if os.Getenv("LISTMONK_ENABLED") != "true" {
 		return false, nil
 	}
 
@@ -111,7 +113,8 @@ func DoesUserExist(email string) (bool, *int) {
 
 // Send a transactional email using the specified template and data
 func SendEmail(email string, templateId int, data bson.M) {
-	if os.Getenv("LISTMONK_ENABLED") == "false" {
+	if os.Getenv("LISTMONK_ENABLED") != "true" {
+		sendSMTPFallback(email, templateId, data)
 		return
 	}
 
@@ -147,7 +150,8 @@ func SendEmail(email string, templateId int, data bson.M) {
 
 // Send a transactional email using the specified template and data. Adds subscriber if they don't exist
 func SendEmailAddSubscriberIfNotExist(email string, templateId int, data bson.M, sendMarketingEmails bool) {
-	if os.Getenv("LISTMONK_ENABLED") == "false" {
+	if os.Getenv("LISTMONK_ENABLED") != "true" {
+		sendSMTPFallback(email, templateId, data)
 		return
 	}
 
@@ -156,4 +160,45 @@ func SendEmailAddSubscriberIfNotExist(email string, templateId int, data bson.M,
 	}
 
 	SendEmail(email, templateId, data)
+}
+
+func sendSMTPFallback(email string, templateId int, data bson.M) {
+	subject := "Timeful notification"
+	if eventName, ok := data["eventName"].(string); ok && eventName != "" {
+		subject = fmt.Sprintf("Timeful: %s", eventName)
+	} else if groupName, ok := data["groupName"].(string); ok && groupName != "" {
+		subject = fmt.Sprintf("Timeful: %s", groupName)
+	}
+
+	lines := []string{"Hello,"}
+	if ownerName, ok := data["ownerName"].(string); ok && ownerName != "" {
+		lines = append(lines, fmt.Sprintf("%s sent you a Timeful update.", ownerName))
+	}
+	if respondentName, ok := data["respondentName"].(string); ok && respondentName != "" {
+		lines = append(lines, fmt.Sprintf("%s responded.", respondentName))
+	}
+	if numResponses, ok := data["numResponses"]; ok {
+		lines = append(lines, fmt.Sprintf("Responses so far: %v", numResponses))
+	}
+	if eventName, ok := data["eventName"].(string); ok && eventName != "" {
+		lines = append(lines, fmt.Sprintf("Event: %s", eventName))
+	}
+	if groupName, ok := data["groupName"].(string); ok && groupName != "" {
+		lines = append(lines, fmt.Sprintf("Group: %s", groupName))
+	}
+	if eventUrl, ok := data["eventUrl"].(string); ok && eventUrl != "" {
+		lines = append(lines, fmt.Sprintf("Open: %s", eventUrl))
+	}
+	if groupUrl, ok := data["groupUrl"].(string); ok && groupUrl != "" {
+		lines = append(lines, fmt.Sprintf("Open: %s", groupUrl))
+	}
+	if finishedUrl, ok := data["finishedUrl"].(string); ok && finishedUrl != "" {
+		lines = append(lines, fmt.Sprintf("Already responded: %s", finishedUrl))
+	}
+	if emails, ok := data["emails"]; ok {
+		lines = append(lines, fmt.Sprintf("New attendees: %v", emails))
+	}
+
+	body := strings.Join(lines, "\n")
+	utils.SendEmail(email, subject, body, "text/plain")
 }
