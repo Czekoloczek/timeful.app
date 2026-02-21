@@ -167,15 +167,16 @@ func createLocalEmailTasks(email string, ownerName string, eventName string, eve
 		label string
 		at    time.Time
 	}{
-		{"", time.Now().Add(1 * time.Second)}, // small delay to avoid immediate execution races
+		{"", time.Now().Add(1 * time.Second)}, // allow timer to store in localTasks before callback runs
 		{"Second", time.Now().Add(24 * time.Hour)},
 		{"Final", time.Now().Add(3 * 24 * time.Hour)},
 	}
 
 	taskIds := make([]string, 0)
+	baseId := time.Now().UnixNano()
 	for i, reminder := range reminderTimes {
 		label := reminder.label
-		taskId := fmt.Sprintf("local-%d-%d", time.Now().UnixNano(), i)
+		taskId := fmt.Sprintf("local-%d-%d", baseId, i)
 		delay := time.Until(reminder.at)
 		if delay < 0 {
 			delay = 0
