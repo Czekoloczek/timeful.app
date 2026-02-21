@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta3"
@@ -20,12 +22,22 @@ import (
 )
 
 var TasksClient *cloudtasks.Client
+var localTasks sync.Map
+var sendReminderEmailSMTPFunc = sendReminderEmailSMTP
 
 func InitTasks() func() {
 	ctx := context.Background()
 
 	var err error
 	credsFile := os.Getenv("SERVICE_ACCOUNT_KEY_PATH")
+	if os.Getenv("LISTMONK_ENABLED") != "true" {
+		logger.StdOut.Println("Skipping Cloud Tasks init; LISTMONK_ENABLED is not true.")
+		return func() {}
+	}
+	if credsFile == "" {
+		logger.StdOut.Println("Skipping Cloud Tasks init; SERVICE_ACCOUNT_KEY_PATH is missing.")
+		return func() {}
+	}
 
 	TasksClient, err = cloudtasks.NewClient(ctx, option.WithCredentialsFile(credsFile))
 	if err != nil {
@@ -39,6 +51,10 @@ func InitTasks() func() {
 }
 
 func CreateEmailTask(email string, ownerName string, eventName string, eventId string) []string {
+	if os.Getenv("LISTMONK_ENABLED") != "true" || TasksClient == nil {
+		return createLocalEmailTasks(email, ownerName, eventName, eventId)
+	}
+
 	// Get listmonk url env vars
 	listmonkUrl := os.Getenv("LISTMONK_URL")
 	listmonkUsername := os.Getenv("LISTMONK_USERNAME")
@@ -127,6 +143,13 @@ func CreateEmailTask(email string, ownerName string, eventName string, eventId s
 }
 
 func DeleteEmailTask(taskId string) {
+	if strings.HasPrefix(taskId, "local-") {
+		if timer, ok := localTasks.Load(taskId); ok {
+			timer.(*time.Timer).Stop()
+			localTasks.Delete(taskId)
+		}
+		return
+	}
 	err := TasksClient.DeleteTask(context.Background(), &cloudtaskspb.DeleteTaskRequest{
 		Name: taskId,
 	})
@@ -135,4 +158,50 @@ func DeleteEmailTask(taskId string) {
 		// logger.StdErr.Println(err)
 		return
 	}
+}
+
+func createLocalEmailTasks(email string, ownerName string, eventName string, eventId string) []string {
+	eventUrl := fmt.Sprintf("%s/e/%s", utils.GetBaseUrl(), eventId)
+	finishedUrl := fmt.Sprintf("%s/e/%s/responded?email=%s", utils.GetBaseUrl(), eventId, email)
+	reminderTimes := []struct {
+		label string
+		at    time.Time
+	}{
+		{"", time.Now().Add(1 * time.Second)}, // allow timer to store in localTasks before callback runs
+		{"Second", time.Now().Add(24 * time.Hour)},
+		{"Final", time.Now().Add(3 * 24 * time.Hour)},
+	}
+
+	taskIds := make([]string, 0)
+	baseId := time.Now().UnixNano()
+	for i, reminder := range reminderTimes {
+		label := reminder.label
+		taskId := fmt.Sprintf("local-%d-%d", baseId, i)
+		delay := time.Until(reminder.at)
+		if delay < 0 {
+			delay = 0
+		}
+		timer := time.AfterFunc(delay, func() {
+			sendReminderEmailSMTPFunc(email, ownerName, eventName, eventUrl, finishedUrl, label)
+		})
+		localTasks.Store(taskId, timer)
+		taskIds = append(taskIds, taskId)
+	}
+
+	return taskIds
+}
+
+func sendReminderEmailSMTP(email string, ownerName string, eventName string, eventUrl string, finishedUrl string, label string) {
+	subject := fmt.Sprintf("Reminder: %s", eventName)
+	if label != "" {
+		subject = fmt.Sprintf("%s reminder: %s", label, eventName)
+	}
+	body := fmt.Sprintf(
+		"Hi,\n\n%s invited you to respond to \"%s\".\nRespond here: %s\nIf you've already responded, mark it here: %s\n",
+		ownerName,
+		eventName,
+		eventUrl,
+		finishedUrl,
+	)
+	utils.SendEmail(email, subject, body, "text/plain")
 }

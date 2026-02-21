@@ -123,12 +123,25 @@ export default {
     /** Returns a timezone object for the local timezone */
     getLocalTimezone() {
       const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-      let timezoneObject = this.timezones.find((t) => t.value === localTimezone)
+      // Prefer the Central European label when the local IANA zone isn't listed.
+      // Sarajevo maps to "Sarajevo, Skopje, Warsaw, Zagreb" in our timezone list.
+      const timezoneAliases = {
+        "Europe/Warsaw": "Europe/Sarajevo",
+        "Europe/Skopje": "Europe/Sarajevo",
+        "Europe/Zagreb": "Europe/Sarajevo",
+        "Europe/Belgrade": "Europe/Sarajevo",
+      }
+      const resolvedTimezone = timezoneAliases[localTimezone] ?? localTimezone
+      let timezoneObject = this.timezones.find(
+        (t) => t.value === resolvedTimezone
+      )
 
       if (!timezoneObject) {
         const offset =
-          spacetime.now(localTimezone).timezone().current.offset * 60
-        timezoneObject = this.timezones.find((t) => t.offset === offset)
+          spacetime.now(resolvedTimezone).timezone().current.offset * 60
+        timezoneObject =
+          this.timezones.find((t) => t.value === "Europe/Sarajevo") ??
+          this.timezones.find((t) => t.offset === offset)
       }
       return timezoneObject
     },

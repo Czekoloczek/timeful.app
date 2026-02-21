@@ -4,7 +4,7 @@
       <!-- Name change section -->
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Profile
         </div>
@@ -49,12 +49,12 @@
         class="tw-flex tw-flex-col tw-gap-5"
       >
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Billing
         </div>
         <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
-          <div class="tw-text-black">
+          <div class="tw-text-black dark:tw-text-white">
             <v-btn @click="openBillingPortal">Manage billing</v-btn>
           </div>
         </div>
@@ -63,12 +63,12 @@
       <!-- Calendar Access Section -->
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Calendar access
         </div>
         <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
-          <div class="tw-text-black">
+          <div class="tw-text-black dark:tw-text-white">
             We do not store your calendar data anywhere on our servers, and we
             only fetch your calendar events for the time frame you specify in
             order to display your calendar events while you fill out your
@@ -88,7 +88,7 @@
       <!-- Permissions Section -->
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Permissions
         </div>
@@ -126,19 +126,37 @@
       <!-- Question Section -->
       <div class="tw-flex tw-flex-col tw-gap-5">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Have a question?
         </div>
         <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
-          <div class="tw-text-black">
+          <div class="tw-text-black dark:tw-text-white">
             Email us at
             <a
-              href="mailto:contact@timeful.app"
-              class="tw-text-black tw-underline"
-              >contact@timeful.app</a
+              href="mailto:timeful@pierdolnik.xyz"
+              class="tw-text-black dark:tw-text-white tw-underline"
+              >timeful@pierdolnik.xyz</a
             >
             with any questions!
+          </div>
+        </div>
+      </div>
+
+      <div class="tw-flex tw-flex-col tw-gap-5">
+        <div
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
+        >
+          Appearance
+        </div>
+        <div class="tw-flex tw-flex-col tw-gap-5 sm:tw-flex-row sm:tw-gap-28">
+          <div class="tw-text-black dark:tw-text-white">
+            Toggle dark mode manually or let it sync with your system.
+          </div>
+          <div
+            class="tw-rounded-md tw-border tw-border-light-gray-stroke tw-bg-white dark:tw-bg-[#1b1e24] tw-px-6 tw-py-4"
+          >
+            <ThemeSelector :themePreference.sync="themePreference" />
           </div>
         </div>
       </div>
@@ -190,8 +208,9 @@
 
 <script>
 import { mapState, mapActions } from "vuex"
-import { _delete, patch, isPhone, get } from "@/utils"
+import { _delete, patch, isPhone, get, setThemePreference } from "@/utils"
 import CalendarAccounts from "@/components/settings/CalendarAccounts.vue"
+import ThemeSelector from "@/components/ThemeSelector.vue"
 
 export default {
   name: "Settings",
@@ -200,7 +219,7 @@ export default {
     title: "Settings - Timeful",
   },
 
-  components: { CalendarAccounts },
+  components: { CalendarAccounts, ThemeSelector },
 
   data: () => ({
     dialog: false,
@@ -223,6 +242,7 @@ export default {
     // Profile settings
     firstName: "",
     lastName: "",
+    themePreference: localStorage.getItem("themePreference") || "system",
   }),
 
   computed: {
@@ -243,6 +263,9 @@ export default {
 
   methods: {
     ...mapActions(["showError"]),
+    applyThemePreference() {
+      setThemePreference(this.themePreference, this.$vuetify)
+    },
     openBillingPortal() {
       get(
         `/stripe/billing-portal?customerId=${encodeURIComponent(
@@ -292,6 +315,16 @@ export default {
   created() {
     this.firstName = this.authUser.firstName
     this.lastName = this.authUser.lastName
+    const storedTheme = localStorage.getItem("themePreference")
+    if (storedTheme) {
+      this.themePreference = storedTheme
+    }
+    this.applyThemePreference()
+  },
+  watch: {
+    themePreference() {
+      this.applyThemePreference()
+    },
   },
 }
 </script>

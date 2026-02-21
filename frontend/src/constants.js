@@ -176,4 +176,24 @@ export const allTimezones = Object.freeze({
 
 export const guestUserId = "000000000000000000000000"
 
+// Polish weekday abbreviations for the selector header.
+export const polishWeekdays = [
+  "Niedz.",
+  "Pon.",
+  "Wt.",
+  "Śr.",
+  "Czw.",
+  "Pt.",
+  "Sob.",
+]
+export const polishWeekdaysStartMonday = [
+  "Pon.",
+  "Wt.",
+  "Śr.",
+  "Czw.",
+  "Pt.",
+  "Sob.",
+  "Niedz.",
+]
+
 export const numFreeEvents = 3

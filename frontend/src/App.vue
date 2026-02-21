@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :dark="$vuetify.theme.dark" :class="{ 'theme--dark': $vuetify.theme.dark }">
     <DiscordBanner />
     <AutoSnackbar color="error" :text="error" />
     <AutoSnackbar color="tw-bg-blue" :text="info" />
@@ -20,8 +20,8 @@
     <CookieConsent />
     <div
       v-if="showHeader"
-      class="tw-fixed tw-z-40 tw-h-14 tw-w-screen tw-bg-white sm:tw-h-16"
-      dark
+      class="tw-fixed tw-z-40 tw-h-14 tw-w-screen sm:tw-h-16"
+      :class="$vuetify.theme.dark ? 'tw-bg-[#1b1e24]' : 'tw-bg-white'"
     >
       <div
         class="tw-relative tw-m-auto tw-flex tw-h-full tw-max-w-6xl tw-items-center tw-justify-center tw-px-4"
@@ -66,6 +66,11 @@
         >
           Donate
         </v-btn>
+        <ThemeSelector
+          class="tw-ml-2"
+          :themePreference.sync="themePreference"
+          compact
+        />
         <v-btn
           v-if="$route.name === 'home' && !isPhone"
           color="primary"
@@ -101,6 +106,154 @@
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans&display=swap");
+
+html.theme--dark,
+.theme--dark body {
+  background-color: #0f1115;
+  color: #ffffff;
+}
+
+.theme--dark .tw-text-very-dark-gray {
+  color: #e5e7eb;
+}
+
+.theme--dark .tw-text-dark-gray {
+  color: #d1d5db;
+}
+
+.theme--dark .tw-text-gray {
+  color: #9ca3af;
+}
+
+.theme--dark .tw-text-gray {
+  color: #9ca3af;
+}
+
+.theme--dark .tw-text-black {
+  color: #ffffff;
+}
+
+.theme--dark .tw-text-green {
+  color: #4ade80;
+}
+
+.theme--dark .tw-text-red {
+  color: #fca5a5;
+}
+
+.theme--dark .tw-bg-white {
+  background-color: #1b1e24;
+}
+
+.theme--dark .tw-bg-light-gray {
+  background-color: #1a1d22;
+}
+
+.theme--dark .tw-bg-off-white {
+  background-color: #14181d;
+}
+
+.theme--dark .tw-bg-green {
+  background-color: #11653b;
+}
+
+.theme--dark .tw-bg-light-gray-stroke {
+  background-color: #20232a;
+}
+
+.theme--dark .tw-border-light-gray-stroke {
+  border-color: #2d3139;
+}
+
+.theme--dark .tw-border-gray {
+  border-color: #3a3f47;
+}
+
+.theme--dark .tw-border-white {
+  border-color: #4b5563;
+}
+
+.theme--dark .tw-bg-white\/70 {
+  background-color: rgba(27, 30, 36, 0.7);
+}
+
+.theme--dark .tw-bg-light-gray\/20 {
+  background-color: rgba(26, 29, 34, 0.2);
+}
+
+.theme--dark .tw-shadow-xl,
+.theme--dark .tw-shadow-md,
+.theme--dark .tw-shadow-sm,
+.theme--dark .tw-shadow-lg,
+.theme--dark .tw-shadow-2xl {
+  box-shadow: none;
+}
+
+.theme--dark .v-card {
+  background-color: #1b1e24;
+  color: #ffffff;
+}
+
+.theme--dark .v-list {
+  background-color: #1b1e24;
+}
+
+.theme--dark .v-menu__content,
+.theme--dark .v-overlay__content {
+  background-color: #1b1e24;
+}
+
+.theme--dark .v-picker__body {
+  background-color: #1b1e24;
+  color: #ffffff;
+}
+
+.theme--dark .v-date-picker-table button {
+  color: #ffffff;
+}
+
+.theme--dark .v-date-picker-table .v-btn__content {
+  color: #ffffff;
+}
+
+.theme--dark .v-date-picker-header,
+.theme--dark .v-date-picker-title {
+  color: #ffffff;
+}
+
+.theme--dark .v-date-picker-table .v-btn {
+  background-color: transparent;
+}
+
+.theme--dark .v-hover-btn,
+.theme--dark .v-hover {
+  background-color: transparent;
+}
+
+.theme--dark .v-input input,
+.theme--dark .v-input textarea {
+  color: #ffffff;
+}
+
+.theme--dark .v-select__selection,
+.theme--dark .v-list-item__title,
+.theme--dark .v-list-item__subtitle,
+.theme--dark .v-label,
+.theme--dark .v-text-field input {
+  color: #ffffff;
+}
+
+.theme--dark .v-icon {
+  color: #ffffff;
+}
+
+.theme--dark .tw-bg-\[\#f3f3f366\] {
+  background-color: rgba(17, 20, 26, 0.6);
+}
+
+.theme--dark .tw-text-very-dark-gray {
+  color: #e5e7eb;
+}
 
 html {
   overflow-y: auto !important;
@@ -235,6 +388,7 @@ import {
   signInGoogle,
   signInOutlook,
   isPremiumUser,
+  setThemePreference,
 } from "@/utils"
 import {
   authTypes,
@@ -254,6 +408,7 @@ import UpgradeDialog from "@/components/pricing/UpgradeDialog.vue"
 import SignInDialog from "@/components/SignInDialog.vue"
 import DiscordBanner from "@/components/DiscordBanner.vue"
 import CookieConsent from "@/components/CookieConsent.vue"
+import ThemeSelector from "@/components/ThemeSelector.vue"
 
 export default {
   name: "App",
@@ -275,6 +430,7 @@ export default {
     SignInDialog,
     DiscordBanner,
     CookieConsent,
+    ThemeSelector,
   },
 
   data: () => ({
@@ -283,6 +439,7 @@ export default {
     scrollY: 0,
     webviewDialog: false,
     signInDialog: false,
+    themePreference: localStorage.getItem("themePreference") || "system",
   }),
 
   computed: {
@@ -337,6 +494,9 @@ export default {
     ]),
     handleScroll(e) {
       this.scrollY = window.scrollY
+    },
+    applyThemePreference() {
+      setThemePreference(this.themePreference, this.$vuetify)
     },
     _createNew(eventOnly = false) {
       this.$posthog.capture("create_new_button_clicked", {
@@ -425,6 +585,7 @@ export default {
       })
       .finally(() => {
         this.loaded = true
+        this.applyThemePreference()
       })
 
     // Event listeners
@@ -443,6 +604,9 @@ export default {
   },
 
   watch: {
+    themePreference() {
+      this.applyThemePreference()
+    },
     $route: {
       immediate: true,
       async handler() {

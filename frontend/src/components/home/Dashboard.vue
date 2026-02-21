@@ -1,36 +1,38 @@
 <template>
-  <div class="tw-rounded-md tw-px-6 tw-py-4 sm:tw-mx-4 sm:tw-bg-[#f3f3f366]">
+  <div class="tw-rounded-md tw-px-6 tw-py-4 sm:tw-mx-4 sm:tw-bg-[#f3f3f366] dark:tw-bg-[#111318]">
     <div class="tw-mb-3 tw-flex tw-items-center tw-justify-between">
       <div class="tw-flex tw-flex-col">
         <div
-          class="tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Dashboard
         </div>
         <div
           v-if="!isPremiumUser"
-          class="tw-flex tw-items-baseline tw-gap-2 tw-text-sm tw-font-normal tw-text-very-dark-gray"
+          class="tw-flex tw-items-baseline tw-gap-2 tw-text-sm tw-font-normal tw-text-very-dark-gray dark:tw-text-gray-300"
         >
           <div>
             {{ authUser?.numEventsCreated }} / {{ numFreeEvents }} free events
             created this month
           </div>
           <div
-            class="tw-cursor-pointer tw-select-none tw-text-xs tw-font-medium tw-text-green tw-underline"
+          class="tw-cursor-pointer tw-select-none tw-text-xs tw-font-medium tw-text-green dark:tw-text-green tw-underline"
             @click="openUpgradeDialog"
           >
             Upgrade
           </div>
         </div>
       </div>
-      <v-btn
-        text
-        @click="openCreateFolderDialog"
-        class="tw-text-very-dark-gray"
-      >
-        <v-icon class="tw-text-lg">mdi-folder-plus</v-icon>
-        <span class="tw-ml-2">New folder</span>
-      </v-btn>
+        <v-btn
+          text
+          @click="openCreateFolderDialog"
+          class="tw-text-very-dark-gray dark:tw-text-gray-200"
+        >
+          <v-icon class="tw-text-lg dark:tw-text-gray-200"
+            >mdi-folder-plus</v-icon
+          >
+          <span class="tw-ml-2">New folder</span>
+        </v-btn>
     </div>
 
     <div>
@@ -64,12 +66,16 @@
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon small v-bind="attrs" v-on="on" @click.stop.prevent>
-                  <v-icon small>mdi-dots-horizontal</v-icon>
+                  <v-icon small class="dark:tw-text-gray-200"
+                    >mdi-dots-horizontal</v-icon
+                  >
                 </v-btn>
               </template>
-              <v-list dense class="tw-py-1">
+              <v-list dense class="tw-py-1 dark:tw-bg-[#1b1e24]">
                 <v-list-item @click.stop.prevent="openEditFolderDialog(folder)">
-                  <v-list-item-title>Edit</v-list-item-title>
+                  <v-list-item-title class="dark:tw-text-white"
+                    >Edit</v-list-item-title
+                  >
                 </v-list-item>
                 <v-list-item @click.stop.prevent="openDeleteDialog(folder)">
                   <v-list-item-title class="tw-text-red"

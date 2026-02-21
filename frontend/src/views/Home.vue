@@ -34,18 +34,18 @@
       </v-fade-transition>
 
       <div
-        class="tw-rounded-md tw-px-6 tw-py-4 sm:tw-mx-4 sm:tw-bg-[#f3f3f366]"
+        class="tw-rounded-md tw-px-6 tw-py-4 sm:tw-mx-4 sm:tw-bg-[#f3f3f366] dark:tw-bg-[#111318]"
         v-if="!loading || eventsNotEmpty"
       >
         <div
-          class="tw-mb-3 tw-text-xl tw-font-medium tw-text-dark-green sm:tw-text-2xl"
+          class="tw-mb-3 tw-text-xl tw-font-medium tw-text-dark-green dark:tw-text-white sm:tw-text-2xl"
         >
           Tools
         </div>
         <div class="tw-flex tw-flex-row tw-items-center tw-gap-2">
           <div
             @click="convertW2M"
-            class="tw-cursor-pointer tw-text-sm tw-font-normal tw-text-dark-gray tw-underline"
+            class="tw-cursor-pointer tw-text-sm tw-font-normal tw-text-dark-gray dark:tw-text-gray-300 tw-underline"
           >
             Convert When2meet to Timeful
           </div>
@@ -65,6 +65,9 @@
         >
           Privacy Policy
         </router-link>
+        <div class="tw-mt-1 tw-text-xs tw-text-gray">
+          Version {{ version }}
+        </div>
       </div>
 
       <!-- FAB -->
@@ -90,7 +93,7 @@ import When2meetImportDialog from "@/components/When2meetImportDialog.vue"
 import Dashboard from "@/components/home/Dashboard.vue"
 import { mapState, mapActions, mapMutations } from "vuex"
 import { eventTypes } from "@/constants"
-import { isPhone, get } from "@/utils"
+import { isPhone, get, setThemePreference } from "@/utils"
 import FormerlyKnownAs from "@/components/FormerlyKnownAs.vue"
 
 export default {
@@ -120,6 +123,7 @@ export default {
   data: () => ({
     loading: true,
     showW2MDialog: false,
+    themePreference: localStorage.getItem("themePreference") || "system",
   }),
 
   mounted() {
@@ -130,12 +134,16 @@ export default {
       openNewGroup: this.openNewGroup,
       eventOnly: false,
     })
+    this.applyThemePreference()
   },
 
   computed: {
     ...mapState(["events", "authUser", "groupsEnabled"]),
     eventsNotEmpty() {
       return this.events.length > 0
+    },
+    version() {
+      return process.env.VUE_APP_COMMIT || "unknown"
     },
     isPhone() {
       return isPhone(this.$vuetify)
@@ -145,6 +153,9 @@ export default {
   methods: {
     ...mapMutations(["setAuthUser", "setNewDialogOptions"]),
     ...mapActions(["getEvents", "createNew"]),
+    applyThemePreference() {
+      setThemePreference(this.themePreference, this.$vuetify)
+    },
     userRespondedToEvent(event) {
       return event.hasResponded ?? false
     },
@@ -157,7 +168,6 @@ export default {
       this.$posthog?.capture("convert_when2meet_to_timeful_clicked")
     },
   },
-
   created() {
     this.getEvents().then(() => {
       this.loading = false

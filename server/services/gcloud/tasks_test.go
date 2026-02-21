@@ -24,7 +24,7 @@ func TestCreateEmailTask(t *testing.T) {
 	// Load .env file
 	err = godotenv.Load("../../.env")
 	if err != nil {
-		logger.StdErr.Panicln("Error loading .env file")
+		t.Skip("Skipping gcloud tasks test; .env not configured")
 	}
 
 	InitTasks()
@@ -44,7 +44,7 @@ func TestDeleteEmailTask(t *testing.T) {
 	// Load .env file
 	err = godotenv.Load("../../.env")
 	if err != nil {
-		logger.StdErr.Panicln("Error loading .env file")
+		t.Skip("Skipping gcloud tasks test; .env not configured")
 	}
 
 	InitTasks()
@@ -67,4 +67,33 @@ func TestDeleteEmailTask(t *testing.T) {
 	}
 
 	fmt.Println("Done.")
+}
+
+func TestCreateLocalEmailTasks(t *testing.T) {
+	var called int
+	originalSender := sendReminderEmailSMTPFunc
+	sendReminderEmailSMTPFunc = func(email string, ownerName string, eventName string, eventUrl string, finishedUrl string, label string) {
+		called++
+	}
+	defer func() { sendReminderEmailSMTPFunc = originalSender }()
+
+	taskIds := createLocalEmailTasks("test@example.com", "Ada", "Demo", "event123")
+	if len(taskIds) != 3 {
+		t.Fatalf("expected 3 task ids, got %d", len(taskIds))
+	}
+
+	for i := 0; i < 120 && called == 0; i++ {
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	if called == 0 {
+		t.Fatalf("expected local reminder sender to be called at least once")
+	}
+
+	for _, id := range taskIds {
+		if _, ok := localTasks.Load(id); !ok {
+			t.Fatalf("expected task %s to be stored", id)
+		}
+		DeleteEmailTask(id)
+	}
 }

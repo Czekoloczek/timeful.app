@@ -95,13 +95,17 @@
 
       <div class="tw-mx-auto tw-mt-4 tw-max-w-5xl">
         <div v-if="!isSettingSpecificTimes" class="tw-mx-4">
-          <!-- Title and copy link -->
-          <div class="tw-flex tw-items-center tw-text-black">
-            <div>
-              <div
-                class="sm:mb-2 tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2"
-              >
-                <div class="tw-text-xl sm:tw-text-3xl">{{ event.name }}</div>
+            <!-- Title and copy link -->
+            <div class="tw-flex tw-items-center tw-text-black dark:tw-text-white">
+              <div>
+                <div
+                  class="sm:mb-2 tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2"
+                >
+                  <div
+                    class="tw-text-xl sm:tw-text-3xl tw-text-black dark:tw-text-white"
+                  >
+                    {{ event.name }}
+                  </div>
                 <v-chip
                   v-if="event.when2meetHref?.length > 0"
                   :href="`https://when2meet.com${event.when2meetHref}`"
@@ -130,7 +134,7 @@
               </div>
               <div class="tw-flex tw-items-baseline tw-gap-1">
                 <div
-                  class="tw-text-sm tw-font-normal tw-text-very-dark-gray sm:tw-text-base"
+                class="tw-text-sm tw-font-normal tw-text-very-dark-gray dark:tw-text-gray-300 sm:tw-text-base"
                 >
                   {{ dateString }}
                 </div>
@@ -244,6 +248,7 @@
           />
         </div>
 
+
         <!-- Calendar -->
 
         <ScheduleOverlap
@@ -312,6 +317,9 @@
         >
           Privacy Policy
         </router-link>
+        <div class="tw-mt-1 tw-text-xs tw-text-gray">
+          Version {{ version }}
+        </div>
       </div>
 
       <div class="tw-h-8"></div>
@@ -334,7 +342,7 @@
           <v-spacer />
           <v-btn
             v-if="!isGroup && !authUser && selectedGuestRespondent"
-            class="tw-bg-white tw-text-green tw-transition-opacity"
+            class="tw-bg-white dark:tw-bg-[#1b1e24] tw-text-green tw-transition-opacity"
             :style="{ opacity: availabilityBtnOpacity }"
             @click="editGuestAvailability"
           >
@@ -342,7 +350,7 @@
           </v-btn>
           <v-btn
             v-else
-            class="tw-bg-white tw-text-green tw-transition-opacity"
+            class="tw-bg-white dark:tw-bg-[#1b1e24] tw-text-green tw-transition-opacity"
             :disabled="loading && !userHasResponded"
             :style="{ opacity: availabilityBtnOpacity }"
             @click="() => addAvailability()"
@@ -355,7 +363,7 @@
             Cancel
           </v-btn>
           <v-spacer />
-          <v-btn class="tw-bg-white tw-text-green" @click="() => saveChanges()">
+          <v-btn class="tw-bg-white dark:tw-bg-[#1b1e24] tw-text-green" @click="() => saveChanges()">
             Save
           </v-btn>
         </template>
@@ -366,7 +374,7 @@
           <v-spacer />
           <v-btn
             :disabled="!allowScheduleEvent"
-            class="tw-bg-white tw-text-blue"
+            class="tw-bg-white dark:tw-bg-[#1b1e24] tw-text-blue"
             @click="confirmScheduleEvent"
           >
             Schedule
@@ -390,6 +398,7 @@ import {
   isIOS,
   isDstObserved,
   doesDstExist,
+  setThemePreference,
   getDateDayOffset,
   dateToDowDate,
   getDateHoursOffset,
@@ -475,6 +484,7 @@ export default {
     weekOffset: 0,
 
     availabilityBtnOpacity: 1,
+    themePreference: localStorage.getItem("themePreference") || "system",
     hasRefetchedAuthUserCalendarEvents: false,
 
     // Availability Groups
@@ -492,12 +502,16 @@ export default {
       this.choiceDialog = true
     }
 
+    this.applyThemePreference()
   },
 
   computed: {
     ...mapState(["authUser", "events"]),
     allowScheduleEvent() {
       return this.scheduleOverlapComponent?.allowScheduleEvent
+    },
+    version() {
+      return process.env.VUE_APP_COMMIT || "unknown"
     },
     calendarTypes() {
       return calendarTypes
@@ -579,6 +593,9 @@ export default {
   methods: {
     ...mapActions(["showError", "showInfo", "getEvents"]),
     ...mapMutations(["setAuthUser"]),
+    applyThemePreference() {
+      setThemePreference(this.themePreference, this.$vuetify)
+    },
     /** Show choice dialog if not signed in, otherwise, immediately start editing availability */
     addAvailability() {
       if (!this.scheduleOverlapComponent) return
