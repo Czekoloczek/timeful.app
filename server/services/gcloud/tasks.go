@@ -72,15 +72,18 @@ func CreateEmailTask(email string, ownerName string, eventName string, eventId s
 	// Get email template ids
 	initialEmailReminderId, err := strconv.Atoi(os.Getenv("LISTMONK_INITIAL_EMAIL_REMINDER_ID"))
 	if err != nil {
-		logger.StdErr.Panicln(err)
+		logger.StdErr.Println("Failed to parse LISTMONK_INITIAL_EMAIL_REMINDER_ID, falling back to SMTP:", err)
+		return createLocalEmailTasks(email, ownerName, eventName, eventId)
 	}
 	secondEmailReminderId, err := strconv.Atoi(os.Getenv("LISTMONK_SECOND_EMAIL_REMINDER_ID"))
 	if err != nil {
-		logger.StdErr.Panicln(err)
+		logger.StdErr.Println("Failed to parse LISTMONK_SECOND_EMAIL_REMINDER_ID, falling back to SMTP:", err)
+		return createLocalEmailTasks(email, ownerName, eventName, eventId)
 	}
 	finalEmailReminderId, err := strconv.Atoi(os.Getenv("LISTMONK_FINAL_EMAIL_REMINDER_ID"))
 	if err != nil {
-		logger.StdErr.Panicln(err)
+		logger.StdErr.Println("Failed to parse LISTMONK_FINAL_EMAIL_REMINDER_ID, falling back to SMTP:", err)
+		return createLocalEmailTasks(email, ownerName, eventName, eventId)
 	}
 
 	// Create map of emails to iterate through
@@ -110,7 +113,8 @@ func CreateEmailTask(email string, ownerName string, eventName string, eventId s
 			"content_type": "html",
 		})
 		if err != nil {
-			logger.StdErr.Panicln(err)
+			logger.StdErr.Println(err)
+			continue
 		}
 
 		// Create task
@@ -133,7 +137,8 @@ func CreateEmailTask(email string, ownerName string, eventName string, eventId s
 		})
 
 		if err != nil {
-			logger.StdErr.Panicln(err)
+			logger.StdErr.Println(err)
+			continue
 		}
 
 		taskIds = append(taskIds, task.Name)

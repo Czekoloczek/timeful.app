@@ -114,43 +114,39 @@ html.theme--dark,
 }
 
 .theme--dark .tw-text-very-dark-gray {
-  color: #e5e7eb;
+  color: #e5e7eb !important;
 }
 
 .theme--dark .tw-text-dark-gray {
-  color: #d1d5db;
+  color: #d1d5db !important;
 }
 
 .theme--dark .tw-text-gray {
-  color: #9ca3af;
-}
-
-.theme--dark .tw-text-gray {
-  color: #9ca3af;
+  color: #9ca3af !important;
 }
 
 .theme--dark .tw-text-black {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .theme--dark .tw-text-green {
-  color: #4ade80;
+  color: #4ade80 !important;
 }
 
 .theme--dark .tw-text-red {
-  color: #fca5a5;
+  color: #fca5a5 !important;
 }
 
 .theme--dark .tw-bg-white {
-  background-color: #1b1e24;
+  background-color: #1b1e24 !important;
 }
 
 .theme--dark .tw-bg-light-gray {
-  background-color: #1a1d22;
+  background-color: #1a1d22 !important;
 }
 
 .theme--dark .tw-bg-off-white {
-  background-color: #14181d;
+  background-color: #14181d !important;
 }
 
 .theme--dark .tw-bg-green {
@@ -249,10 +245,6 @@ html.theme--dark,
 
 .theme--dark .tw-bg-\[\#f3f3f366\] {
   background-color: rgba(17, 20, 26, 0.6);
-}
-
-.theme--dark .tw-text-very-dark-gray {
-  color: #e5e7eb;
 }
 
 html {

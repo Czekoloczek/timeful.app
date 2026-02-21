@@ -110,7 +110,7 @@
               >
                 <div
                   :class="calendarOnly ? 'tw-invisible' : 'tw-visible'"
-                  class="tw-sticky tw-top-14 tw-z-10 -tw-ml-3 tw-mb-3 tw-h-11 tw-bg-white sm:tw-top-16 sm:tw-ml-0"
+                  class="tw-sticky tw-top-14 tw-z-10 -tw-ml-3 tw-mb-3 tw-h-11 tw-bg-white dark:tw-bg-[#1b1e24] sm:tw-top-16 sm:tw-ml-0"
                 >
                   <div
                     :class="hasPrevPage ? 'tw-visible' : 'tw-invisible'"
@@ -179,7 +179,7 @@
                         ? undefined
                         : 'tw-sticky tw-top-14'
                     "
-                    class="tw-z-10 tw-flex tw-h-14 tw-items-center tw-bg-white sm:tw-top-16"
+                    class="tw-z-10 tw-flex tw-h-14 tw-items-center tw-bg-white dark:tw-bg-[#1b1e24] sm:tw-top-16"
                   >
                     <template v-for="(day, i) in days">
                       <div
@@ -187,7 +187,7 @@
                         :style="{ width: `${SPLIT_GAP_WIDTH}px` }"
                         :key="`${i}-gap`"
                       ></div>
-                      <div :key="i" class="tw-flex-1 tw-bg-white">
+                      <div :key="i" class="tw-flex-1 tw-bg-white dark:tw-bg-[#1b1e24]">
                         <div class="tw-text-center">
                           <div class="tw-text-base tw-capitalize sm:tw-text-lg">
                             {{ day.dayText }}
@@ -507,7 +507,7 @@
               <div
                 v-if="!calendarOnly"
                 :class="calendarOnly ? 'tw-invisible' : 'tw-visible'"
-                class="tw-sticky tw-top-14 tw-z-10 tw-mb-4 tw-h-11 tw-bg-white sm:tw-top-16"
+                class="tw-sticky tw-top-14 tw-z-10 tw-mb-4 tw-h-11 tw-bg-white dark:tw-bg-[#1b1e24] sm:tw-top-16"
               >
                 <div
                   :class="hasNextPage ? 'tw-visible' : 'tw-invisible'"
@@ -889,8 +889,7 @@
           <!-- Fixed pos availability toggle (mobile) -->
           <v-expand-transition>
             <div v-if="!isGroup && editing && !isSignUp">
-              <div class="tw-bg-white tw-p-4">
-                <AvailabilityTypeToggle
+              <div class="tw-bg-white dark:tw-bg-[#1b1e24] tw-p-4">
                   class="tw-w-full"
                   v-model="availabilityType"
                 />
@@ -915,7 +914,7 @@
           <!-- Respondents list -->
           <v-expand-transition>
             <div v-if="delayedShowStickyRespondents">
-              <div class="tw-bg-white tw-p-4">
+              <div class="tw-bg-white dark:tw-bg-[#1b1e24] tw-p-4">
                 <RespondentsList
                   :max-height="100"
                   :event="event"
@@ -958,7 +957,7 @@
           <v-expand-transition>
             <div
               v-if="state === states.SET_SPECIFIC_TIMES"
-              class="-tw-mb-16 tw-bg-white tw-p-4"
+              class="-tw-mb-16 tw-bg-white dark:tw-bg-[#1b1e24] tw-p-4"
             >
               <SpecificTimesInstructions
                 :numTempTimes="tempTimes.size"
@@ -3165,13 +3164,13 @@ export default {
               } else if (
                 this.availabilityType === availabilityTypes.IF_NEEDED
               ) {
-                c += "tw-bg-yellow dark:tw-bg-[#9977004d] "
+                c += "tw-bg-yellow dark:tw-bg-[#99770033] "
               } else if (
                 this.availabilityType === availabilityTypes.NOT_SURE
               ) {
                 s.backgroundColor = this.$vuetify?.theme?.dark
                   ? "#3b82f6f0"
-                  : "#3b82f666"
+                  : "#3b82f699"
               }
             }
           } else if (this.dragType === this.DRAG_TYPES.REMOVE) {
@@ -3192,11 +3191,11 @@ export default {
             if (this.availability.has(date.getTime())) {
               s.backgroundColor = "#00994C77"
             } else if (this.ifNeeded.has(date.getTime())) {
-              c += "tw-bg-yellow dark:tw-bg-[#9977004d] "
+              c += "tw-bg-yellow dark:tw-bg-[#99770033] "
             } else if (this.notSure.has(date.getTime())) {
               s.backgroundColor = this.$vuetify?.theme?.dark
                 ? "#3b82f6f0"
-                : "#3b82f666"
+                : "#3b82f699"
             }
           }
         }
@@ -3208,13 +3207,13 @@ export default {
         if (timeslotRespondents.has(respondent)) {
           if (this.parsedResponses[respondent]?.ifNeeded?.has(date.getTime())) {
             c +=
-              "tw-bg-yellow dark:tw-bg-[#9977004d] "
+              "tw-bg-yellow dark:tw-bg-[#99770033] "
           } else if (
             this.parsedResponses[respondent]?.notSure?.has(date.getTime())
           ) {
             s.backgroundColor = this.$vuetify?.theme?.dark
               ? "#3b82f6f0"
-              : "#3b82f666"
+              : "#3b82f699"
           } else {
             s.backgroundColor = "#00994C77"
           }
@@ -3313,13 +3312,13 @@ export default {
               ) {
                 s.backgroundColor = this.$vuetify?.theme?.dark
                   ? "#3b82f6f0"
-                  : "#3b82f666"
+                  : "#3b82f699"
               } else if (
                 this.parsedResponses[respondentId]?.ifNeeded?.has(
                   date.getTime()
                 )
               ) {
-                c += "tw-bg-yellow dark:tw-bg-[#9977004d] "
+                c += "tw-bg-yellow dark:tw-bg-[#99770033] "
               } else {
                 const green = "#00994C88"
                 s.backgroundColor = green

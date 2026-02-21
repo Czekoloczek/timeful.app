@@ -662,13 +662,13 @@ export default {
       if (this.curRespondentsSet.has(id) && (isIfNeeded || isNotSure)) {
         c.push(
           isNotSure
-            ? "tw-bg-blue/40 dark:tw-bg-blue/70"
-            : "tw-bg-yellow dark:tw-bg-[#9977004d]"
+            ? "tw-bg-blue/60 dark:tw-bg-blue/70"
+            : "tw-bg-yellow dark:tw-bg-[#99770033]"
         )
       } else if (this.curRespondents.length === 0 && isNotSure) {
-        c.push("tw-bg-blue/20 dark:tw-bg-blue/55")
+        c.push("tw-bg-blue/35 dark:tw-bg-blue/55")
       } else if (this.curRespondents.length === 0 && isIfNeeded) {
-        c.push("tw-bg-yellow dark:tw-bg-[#9977004d]")
+        c.push("tw-bg-yellow dark:tw-bg-[#99770033]")
       }
 
       if (this.$vuetify?.theme?.dark && (isIfNeeded || isNotSure)) {
