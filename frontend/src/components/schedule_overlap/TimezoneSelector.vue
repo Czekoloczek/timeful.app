@@ -123,11 +123,13 @@ export default {
     /** Returns a timezone object for the local timezone */
     getLocalTimezone() {
       const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+      // Prefer the Central European timezone label when GMT+1 offsets are ambiguous.
       const timezoneAliases = {
         "Europe/Warsaw": "Europe/Sarajevo",
         "Europe/Skopje": "Europe/Sarajevo",
         "Europe/Zagreb": "Europe/Sarajevo",
         "Europe/Belgrade": "Europe/Sarajevo",
+        "Africa/Casablanca": "Europe/Sarajevo",
       }
       const resolvedTimezone = timezoneAliases[localTimezone] ?? localTimezone
       let timezoneObject = this.timezones.find(

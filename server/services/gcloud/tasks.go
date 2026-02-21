@@ -167,9 +167,9 @@ func createLocalEmailTasks(email string, ownerName string, eventName string, eve
 	}
 
 	taskIds := make([]string, 0)
-	for _, reminder := range reminderTimes {
+	for i, reminder := range reminderTimes {
 		reminder := reminder
-		taskId := fmt.Sprintf("local-%d", time.Now().UnixNano())
+		taskId := fmt.Sprintf("local-%d-%d", time.Now().UnixNano(), i)
 		delay := time.Until(reminder.at)
 		if delay < 0 {
 			delay = 0

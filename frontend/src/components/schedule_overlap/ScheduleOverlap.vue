@@ -189,14 +189,14 @@
                       ></div>
                       <div :key="i" class="tw-flex-1 tw-bg-white">
                         <div class="tw-text-center">
+                          <div class="tw-text-base tw-capitalize sm:tw-text-lg">
+                            {{ day.dayText }}
+                          </div>
                           <div
                             v-if="isSpecificDates || isGroup"
                             class="tw-text-[12px] tw-font-light tw-capitalize tw-text-very-dark-gray sm:tw-text-xs"
                           >
                             {{ day.dateString }}
-                          </div>
-                          <div class="tw-text-base tw-capitalize sm:tw-text-lg">
-                            {{ day.dayText }}
                           </div>
                         </div>
                       </div>
@@ -1026,6 +1026,8 @@ import {
   calendarOptionsDefaults,
   eventTypes,
   guestUserId,
+  polishWeekdays,
+  polishWeekdaysStartMonday,
   timeTypes,
   timeslotDurations,
   upgradeDialogTypes,
@@ -1228,12 +1230,13 @@ export default {
     },
     /** Returns the days of the week in the correct order */
     daysOfWeek() {
+      // Polish abbreviations requested for selector header (locale-specific).
       if (!this.event.daysOnly) {
-        return ["Niedz.", "Pon.", "Wt.", "Śr.", "Czw.", "Pt.", "Sob."]
+        return polishWeekdays
       }
       return !this.startCalendarOnMonday
-        ? ["Niedz.", "Pon.", "Wt.", "Śr.", "Czw.", "Pt.", "Sob."]
-        : ["Pon.", "Wt.", "Śr.", "Czw.", "Pt.", "Sob.", "Niedz."]
+        ? polishWeekdays
+        : polishWeekdaysStartMonday
     },
     /** Only allow scheduling when a curScheduledEvent exists */
     allowScheduleEvent() {
