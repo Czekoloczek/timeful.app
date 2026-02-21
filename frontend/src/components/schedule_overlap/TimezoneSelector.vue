@@ -124,6 +124,7 @@ export default {
     getLocalTimezone() {
       const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       // Prefer the Central European label when the local IANA zone isn't listed.
+      // Sarajevo maps to "Sarajevo, Skopje, Warsaw, Zagreb" in our timezone list.
       const timezoneAliases = {
         "Europe/Warsaw": "Europe/Sarajevo",
         "Europe/Skopje": "Europe/Sarajevo",

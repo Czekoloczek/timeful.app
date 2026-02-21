@@ -167,7 +167,7 @@ func createLocalEmailTasks(email string, ownerName string, eventName string, eve
 		label string
 		at    time.Time
 	}{
-		{"", time.Now().Add(1 * time.Second)},
+		{"", time.Now().Add(1 * time.Second)}, // small delay to avoid immediate execution races
 		{"Second", time.Now().Add(24 * time.Hour)},
 		{"Final", time.Now().Add(3 * 24 * time.Hour)},
 	}

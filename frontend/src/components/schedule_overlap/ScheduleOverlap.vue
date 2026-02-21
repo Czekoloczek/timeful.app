@@ -1230,7 +1230,8 @@ export default {
     },
     /** Returns the days of the week in the correct order */
     daysOfWeek() {
-      // Polish abbreviations requested for selector header (global change for all users; revisit for i18n).
+      // Polish abbreviations requested for selector header (global change for all users).
+      // TODO: Implement i18n for weekday labels (locale-specific rendering).
       if (!this.event.daysOnly) {
         return polishWeekdays
       }
