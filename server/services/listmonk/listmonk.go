@@ -163,6 +163,11 @@ func SendEmailAddSubscriberIfNotExist(email string, templateId int, data bson.M,
 }
 
 func sendSMTPFallback(email string, templateId int, data bson.M) {
+	subject, body := buildSMTPFallbackEmail(data)
+	utils.SendEmail(email, subject, body, "text/plain")
+}
+
+func buildSMTPFallbackEmail(data bson.M) (string, string) {
 	subject := "Timeful notification"
 	if eventName, ok := data["eventName"].(string); ok && eventName != "" {
 		subject = fmt.Sprintf("Timeful: %s", eventName)
@@ -199,6 +204,5 @@ func sendSMTPFallback(email string, templateId int, data bson.M) {
 		lines = append(lines, fmt.Sprintf("New attendees: %v", emails))
 	}
 
-	body := strings.Join(lines, "\n")
-	utils.SendEmail(email, subject, body, "text/plain")
+	return subject, strings.Join(lines, "\n")
 }

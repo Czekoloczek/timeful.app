@@ -23,6 +23,7 @@ import (
 
 var TasksClient *cloudtasks.Client
 var localTasks sync.Map
+var sendReminderEmailSMTPFunc = sendReminderEmailSMTP
 
 func InitTasks() func() {
 	ctx := context.Background()
@@ -175,7 +176,7 @@ func createLocalEmailTasks(email string, ownerName string, eventName string, eve
 			delay = 0
 		}
 		timer := time.AfterFunc(delay, func() {
-			sendReminderEmailSMTP(email, ownerName, eventName, eventUrl, finishedUrl, reminder.label)
+			sendReminderEmailSMTPFunc(email, ownerName, eventName, eventUrl, finishedUrl, reminder.label)
 		})
 		localTasks.Store(taskId, timer)
 		taskIds = append(taskIds, taskId)
