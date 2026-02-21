@@ -11,7 +11,7 @@ DIST_FOLDER_SERVER_LOCATION="/schej.it-staging/frontend/dist" # The location of 
 echo "Building frontend..."
 cd frontend
 npm install
-npm run build
+COMMIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "") npm run build
 
 # Delete old build 
 echo -n "Deleting old dist folder..."
