@@ -1230,7 +1230,7 @@ export default {
     },
     /** Returns the days of the week in the correct order */
     daysOfWeek() {
-      // Polish abbreviations requested for selector header (global change).
+      // Polish abbreviations requested for selector header (global change for all users).
       if (!this.event.daysOnly) {
         return polishWeekdays
       }
