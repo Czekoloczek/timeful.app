@@ -31,6 +31,7 @@ func InitTasks() func() {
 	var err error
 	credsFile := os.Getenv("SERVICE_ACCOUNT_KEY_PATH")
 	if os.Getenv("LISTMONK_ENABLED") != "true" || credsFile == "" {
+		logger.StdOut.Println("Skipping Cloud Tasks init; LISTMONK_ENABLED is not true or credentials missing.")
 		return func() {}
 	}
 
@@ -169,7 +170,6 @@ func createLocalEmailTasks(email string, ownerName string, eventName string, eve
 
 	taskIds := make([]string, 0)
 	for i, reminder := range reminderTimes {
-		reminder := reminder
 		taskId := fmt.Sprintf("local-%d-%d", time.Now().UnixNano(), i)
 		delay := time.Until(reminder.at)
 		if delay < 0 {

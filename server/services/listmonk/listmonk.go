@@ -17,6 +17,7 @@ import (
 // Adds the given user to the Listmonk contact list
 // If subscriberId is not nil, then UPDATE the user instead of adding user
 func AddUserToListmonk(email string, firstName string, lastName string, picture string, subscriberId *int, sendMarketingEmails bool) {
+	// Listmonk is opt-in; only enable when explicitly set to "true".
 	if os.Getenv("LISTMONK_ENABLED") != "true" {
 		return
 	}
@@ -72,6 +73,7 @@ func AddUserToListmonk(email string, firstName string, lastName string, picture 
 // Check if the user is already in listmonk
 // Returns a bool representing whether the subscriber exists and the id of the subscriber if it does exist
 func DoesUserExist(email string) (bool, *int) {
+	// Listmonk is opt-in; only enable when explicitly set to "true".
 	if os.Getenv("LISTMONK_ENABLED") != "true" {
 		return false, nil
 	}
@@ -113,6 +115,7 @@ func DoesUserExist(email string) (bool, *int) {
 
 // Send a transactional email using the specified template and data
 func SendEmail(email string, templateId int, data bson.M) {
+	// Listmonk is opt-in; only enable when explicitly set to "true".
 	if os.Getenv("LISTMONK_ENABLED") != "true" {
 		sendSMTPFallback(email, templateId, data)
 		return
@@ -150,6 +153,7 @@ func SendEmail(email string, templateId int, data bson.M) {
 
 // Send a transactional email using the specified template and data. Adds subscriber if they don't exist
 func SendEmailAddSubscriberIfNotExist(email string, templateId int, data bson.M, sendMarketingEmails bool) {
+	// Listmonk is opt-in; only enable when explicitly set to "true".
 	if os.Getenv("LISTMONK_ENABLED") != "true" {
 		sendSMTPFallback(email, templateId, data)
 		return
